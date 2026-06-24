@@ -3,54 +3,99 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Dashboard Interactivo | Encuesta Ciudadanos</title>
+<title>Dashboard Encuesta Ciudadanos</title>
+
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
 <style>
-:root{--bg:#050816;--line:rgba(255,255,255,.12);--txt:#F8FBFF;--muted:#9EAAC4;--cyan:#21E6FF;--purple:#9E62FF;--green:#45F2AC;--amber:#FFD166;--red:#FF5C7A;--shadow:0 25px 80px rgba(0,0,0,.42)}
-*{box-sizing:border-box}body{margin:0;color:var(--txt);font-family:Segoe UI,Inter,Roboto,Arial,sans-serif;background:radial-gradient(circle at 10% 0%,#173B7B 0%,#081126 32%,#050816 100%);min-height:100vh}.wrap{max-width:1500px;margin:auto;padding:26px}.hero{display:grid;grid-template-columns:1.4fr .8fr;gap:18px}.card{background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);backdrop-filter:blur(16px);overflow:hidden}.pad{padding:26px}.kicker{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);font-weight:900}.h1{font-size:58px;line-height:.95;margin:12px 0 10px;font-weight:950}.sub{color:var(--muted);font-size:17px;line-height:1.45;max-width:850px}.loadbox{margin-top:22px;border:1.5px solid rgba(33,230,255,.35);border-radius:22px;padding:16px 18px;background:rgba(33,230,255,.07);display:flex;gap:12px;align-items:center;flex-wrap:wrap}.dot{width:12px;height:12px;border-radius:50%;background:var(--amber);box-shadow:0 0 18px var(--amber)}.dot.ok{background:var(--green);box-shadow:0 0 18px var(--green)}.dot.bad{background:var(--red);box-shadow:0 0 18px var(--red)}.status{color:#CBEFFF;font-weight:800}.btn{border:1px solid var(--line);border-radius:14px;padding:10px 14px;font-weight:800;color:var(--txt);background:rgba(255,255,255,.06);cursor:pointer}.score{display:grid;place-items:center;text-align:center;min-height:335px;padding:26px}.ring{--p:0;width:225px;height:225px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--green) calc(var(--p)*1%),rgba(255,255,255,.1) 0);position:relative;filter:drop-shadow(0 0 35px rgba(69,242,172,.18))}.ring:before{content:"";position:absolute;width:156px;height:156px;border-radius:50%;background:#091126}.ring b{position:relative;font-size:52px}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;margin-top:18px}.metric{grid-column:span 3;padding:22px}.metric .n{font-size:42px;font-weight:950}.metric .l{color:var(--muted);font-weight:750}.section{grid-column:span 6;padding:24px}.wide{grid-column:span 12}.third{grid-column:span 4}.title{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px}.title h2{font-size:22px;margin:0}.title span{font-size:12px;color:var(--muted)}select,input[type=search]{width:100%;background:#0B1430;color:var(--txt);border:1px solid var(--line);border-radius:14px;padding:11px 12px;outline:none}.filters{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.bars{display:grid;gap:12px}.bar{display:grid;grid-template-columns:170px 1fr 64px;gap:12px;align-items:center}.bar label{font-size:13px;color:#E8F2FF;font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.track{height:17px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}.fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--cyan),var(--purple));box-shadow:0 0 20px rgba(33,230,255,.22)}.fill.green{background:linear-gradient(90deg,var(--green),var(--cyan))}.fill.amber{background:linear-gradient(90deg,var(--amber),var(--purple))}.val{font-weight:900;text-align:right}.table{max-height:370px;overflow:auto;border-radius:18px;border:1px solid var(--line)}table{width:100%;border-collapse:collapse}th,td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px;text-align:left}th{position:sticky;top:0;background:#0b1430;color:#CFF7FF}td{color:#DDE8FB}.insights{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.insight{border:1px solid var(--line);background:linear-gradient(180deg,rgba(33,230,255,.08),rgba(158,98,255,.06));border-radius:22px;padding:18px}.insight h3{margin:0 0 8px}.insight p{margin:0;color:var(--muted);line-height:1.4}.cloud{display:flex;gap:10px;flex-wrap:wrap}.tag{padding:10px 13px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--line);font-weight:800}.tag.hot{background:rgba(255,92,122,.14);border-color:rgba(255,92,122,.35)}.empty{padding:22px;border-radius:20px;background:rgba(255,209,102,.10);border:1px solid rgba(255,209,102,.3);color:#FFE6A0;line-height:1.45}.foot{font-size:12px;color:var(--muted);margin:18px 4px 0}@media(max-width:980px){.hero{grid-template-columns:1fr}.h1{font-size:40px}.metric,.section,.third{grid-column:span 12}.filters,.insights{grid-template-columns:1fr}.bar{grid-template-columns:120px 1fr 55px}}
+body{
+    margin:0;
+    font-family:Arial;
+    background:#081126;
+    color:white;
+}
+
+.container{
+    padding:30px;
+}
+
+h1{
+    font-size:40px;
+    margin-bottom:10px;
+}
+
+.status{
+    margin:20px 0;
+    padding:15px;
+    background:#0f1f3d;
+    border-radius:10px;
+}
+
+.metric{
+    font-size:28px;
+    font-weight:bold;
+}
+
+.card{
+    background:#0f1f3d;
+    padding:20px;
+    border-radius:15px;
+    margin-top:15px;
+}
 </style>
 </head>
+
 <body>
-<div class="wrap">
-  <section class="hero">
-    <div class="card pad">
-      <div class="kicker">Encuesta Ciudadanos · Dashboard automático</div>
-      <div class="h1">Insight Hub de atención ciudadana</div>
-      <div class="sub">Dashboard público con carga automática del Excel alojado en el mismo repositorio. El cliente solo abre el enlace y ve los resultados; no tiene que subir ni seleccionar archivos.</div>
-      <div class="loadbox"><span id="dot" class="dot"></span><span class="status" id="status">Cargando datos automáticamente desde el repositorio...</span><button class="btn" onclick="loadExcel()">Reintentar carga</button></div>
+
+<div class="container">
+
+    <h1>Insight Hub de atención ciudadana</h1>
+
+    <div id="status" class="status">
+        Cargando datos automáticamente...
     </div>
-    <div class="card score"><div class="ring" id="ring"><b id="favPct">0%</b></div><h2>Percepción favorable</h2><small style="color:var(--muted)">Bueno + Excelente en calidad del servicio</small></div>
-  </section>
-  <section class="grid">
-    <div class="card metric"><div class="n" id="mTotal">0</div><div class="l">respuestas</div></div>
-    <div class="card metric"><div class="n" id="mCities">0</div><div class="l">ciudades / territorios</div></div>
-    <div class="card metric"><div class="n" id="mEffective">0%</div><div class="l">respuesta efectiva</div></div>
-    <div class="card metric"><div class="n" id="mDigital">0%</div><div class="l">preferencia digital</div></div>
-    <div class="card section wide"><div class="title"><h2>Filtros interactivos</h2><span>La visual cambia al instante</span></div><div class="filters"><select id="fCity"><option value="">Ciudad: todas</option></select><select id="fSede"><option value="">Sede: todas</option></select><select id="fAge"><option value="">Edad: todas</option></select><select id="fSex"><option value="">Sexo: todos</option></select><input id="q" type="search" placeholder="Buscar trámite, mejora, sede..." /></div></div>
-    <div class="card section"><div class="title"><h2>Calidad del servicio</h2><span>Conteo y porcentaje</span></div><div class="bars" id="qualityBars"></div></div>
-    <div class="card section"><div class="title"><h2>Tiempo de espera</h2><span>Distribución</span></div><div class="bars" id="waitBars"></div></div>
-    <div class="card section"><div class="title"><h2>Canal preferido</h2><span>Presencial, internet, teléfono...</span></div><div class="bars" id="channelBars"></div></div>
-    <div class="card section"><div class="title"><h2>Tipo de gestión</h2><span>Motivo principal</span></div><div class="bars" id="gestionBars"></div></div>
-    <div class="card section wide"><div class="title"><h2>Ranking de sedes / ciudades</h2><span>Ordenado por volumen de respuestas</span></div><div class="table"><table><thead><tr><th>Ciudad</th><th>Sede</th><th>Respuestas</th><th>Favorabilidad</th><th>Canal más usado</th><th>Mejora más citada</th></tr></thead><tbody id="rankBody"></tbody></table></div></div>
-    <div class="card section third"><div class="title"><h2>Mejoras detectadas</h2><span>Temas frecuentes</span></div><div class="cloud" id="cloud"></div></div>
-    <div class="card section third"><div class="title"><h2>Demografía</h2><span>Edad</span></div><div class="bars" id="ageBars"></div></div>
-    <div class="card section third"><div class="title"><h2>Perfil ciudadano</h2><span>Sexo registrado</span></div><div class="bars" id="sexBars"></div></div>
-    <div class="card section wide"><div class="title"><h2>Lectura ejecutiva automática</h2><span>Generada con filtros activos</span></div><div class="insights" id="insights"></div></div>
-  </section>
-  <div class="foot">Fuente: archivo Excel publicado junto al HTML en GitHub Pages. Para que funcione, el Excel debe estar en la raíz del repositorio con el nombre exacto: <b>Instrumento 2 - Encuesta Ciudadanos.xlsx</b>.</div>
+
+    <div class="card">
+        <div>Total respuestas:</div>
+        <div id="total" class="metric">0</div>
+    </div>
+
 </div>
+
 <script>
-let rows=[];
-const EXCEL_URLS=['Instrumento%202%20-%20Encuesta%20Ciudadanos.xlsx','Instrumento 2 - Encuesta Ciudadanos.xlsx'];
-const C={city:'Ciudad de la Sede',sede:'Nombre de la Sede',quality:'¿Cómo califica la calidad de la prestación del servicio ofrecido por la entidad?',gestion:'¿Qué tipo de gestión vino a realizar hoy?',channel:'¿Cuál de los siguientes canales preferiría usar?',wait:'¿Cuánto tiempo aproximadamente tuvo que esperar para ser atendido? Indique el tiempo en minutos',improvePoint:'Teniendo en cuenta la calificación anterior ¿Qué le mejoraría a este punto de servicio?',improveServer:'Teniendo en cuenta la calificación anterior ¿Qué mejoraría a la atención prestada por los servidores?',effective:'¿La entidad le dio respuesta efectiva a su requerimiento?',age:'Edad',sex:'Sexo de nacimiento'};
-function clean(v){return(v==null?'':String(v)).trim()}function label(v){return clean(v).replace(/^\d+\.?\s*/,'').replace(/^Opción \d+:\s*/,'').replace(/\s+/g,' ')}function isYes(v){return /^1\s*si\b|^si$/i.test(clean(v))}function isDigital(v){let x=label(v).toLowerCase();return x.includes('internet')||x.includes('web')||x.includes('virtual')||x.includes('correo')||x.includes('whats')||x.includes('aplicativo')||x.includes('digital')}
-function countBy(data,col,limit=8){let m={};data.forEach(r=>{let k=label(r[col])||'Sin dato';m[k]=(m[k]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,limit)}function pct(n,d){return d?Math.round(n*100/d):0}function uniq(data,col){return[...new Set(data.map(r=>label(r[col])).filter(Boolean))].sort()}
-function fillSelect(id,vals,first){let el=document.getElementById(id),cur=el.value;el.innerHTML='<option value="">'+first+'</option>'+vals.map(v=>`<option>${v}</option>`).join('');el.value=vals.includes(cur)?cur:''}
-function filtered(){let city=fCity.value,sede=fSede.value,age=fAge.value,sex=fSex.value,qq=q.value.toLowerCase();return rows.filter(r=>(!city||label(r[C.city])==city)&&(!sede||label(r[C.sede])==sede)&&(!age||label(r[C.age])==age)&&(!sex||label(r[C.sex])==sex)&&(!qq||Object.values(r).join(' ').toLowerCase().includes(qq)))}
-function bars(id,items,total,cls=''){let max=Math.max(1,...items.map(x=>x[1]));document.getElementById(id).innerHTML=items.map(([k,v])=>`<div class="bar"><label title="${k}">${k}</label><div class="track"><div class="fill ${cls}" style="width:${Math.max(3,v/max*100)}%"></div></div><div class="val">${v}<small> ${pct(v,total)}%</small></div></div>`).join('')||'<div class="empty">Sin datos para este filtro.</div>'}
-function render(){let data=filtered(),n=data.length;let fav=data.filter(r=>/4|5|bueno|excelente/i.test(clean(r[C.quality]))).length;let eff=data.filter(r=>isYes(r[C.effective])).length;let dig=data.filter(r=>isDigital(r[C.channel])).length;mTotal.textContent=n;mCities.textContent=uniq(data,C.city).length;mEffective.textContent=pct(eff,n)+'%';mDigital.textContent=pct(dig,n)+'%';favPct.textContent=pct(fav,n)+'%';ring.style.setProperty('--p',pct(fav,n));bars('qualityBars',countBy(data,C.quality,6),n,'green');bars('waitBars',countBy(data,C.wait,6),n,'amber');bars('channelBars',countBy(data,C.channel,6),n,'');bars('gestionBars',countBy(data,C.gestion,6),n,'green');bars('ageBars',countBy(data,C.age,7),n,'');bars('sexBars',countBy(data,C.sex,6),n,'amber');let groups={};data.forEach(r=>{let key=(label(r[C.city])||'Sin ciudad')+'||'+(label(r[C.sede])||'Sin sede');groups[key]=groups[key]||[];groups[key].push(r)});rankBody.innerHTML=Object.entries(groups).sort((a,b)=>b[1].length-a[1].length).slice(0,20).map(([k,g])=>{let[ci,se]=k.split('||'),favp=pct(g.filter(r=>/4|5|bueno|excelente/i.test(clean(r[C.quality]))).length,g.length);let ch=countBy(g,C.channel,1)[0]?.[0]||'Sin dato';let im=countBy(g,C.improvePoint,1)[0]?.[0]||'Sin dato';return`<tr><td>${ci}</td><td>${se}</td><td>${g.length}</td><td>${favp}%</td><td>${ch}</td><td>${im}</td></tr>`}).join('');let text=data.map(r=>label(r[C.improvePoint])+' '+label(r[C.improveServer])).join(' ').toLowerCase();let themes=['señalización','espacio','ventanillas','distintivos','lenguaje','información','recepción','infraestructura','presencial','internet','virtual','teléfono','nada'];cloud.innerHTML=themes.map(t=>{let c=(text.match(new RegExp(t,'g'))||[]).length;return c?`<span class="tag ${c>4?'hot':''}">${t} · ${c}</span>`:''}).join('')||'<div class="empty">No hay mejoras visibles en este filtro.</div>';insights.innerHTML=[`<div class="insight"><h3>Favorabilidad</h3><p>Con el filtro activo, ${pct(fav,n)}% de respuestas están en Bueno/Excelente. Base: ${n} registros.</p></div>`,`<div class="insight"><h3>Canales</h3><p>${pct(dig,n)}% prefiere o menciona canal digital. Úsalo para priorizar comunicación y pedagogía.</p></div>`,`<div class="insight"><h3>Prioridad operativa</h3><p>Los temas recurrentes de mejora se concentran en señalización, espacios, identificación y claridad del recorrido ciudadano.</p></div>`].join('')}
-function init(){fillSelect('fCity',uniq(rows,C.city),'Ciudad: todas');fillSelect('fSede',uniq(rows,C.sede),'Sede: todas');fillSelect('fAge',uniq(rows,C.age),'Edad: todas');fillSelect('fSex',uniq(rows,C.sex),'Sexo: todos');render()}
-async function loadExcel(){dot.className='dot';status.textContent='Cargando datos automáticamente desde el repositorio...';let lastError='';for(const url of EXCEL_URLS){try{const res=await fetch(url,{cache:'no-store'});if(!res.ok){lastError=`${url}: ${res.status}`;continue;}const ab=await res.arrayBuffer();const wb=XLSX.read(ab,{type:'array'});const ws=wb.Sheets[wb.SheetNames[0]];rows=XLSX.utils.sheet_to_json(ws,{defval:''});dot.className='dot ok';status.textContent='Datos cargados automáticamente: '+rows.length+' registros';init();return;}catch(e){lastError=e.message}}dot.className='dot bad';status.innerHTML='No encontré el Excel en la raíz del repositorio. Sube el archivo con este nombre exacto: <b>Instrumento 2 - Encuesta Ciudadanos.xlsx</b>. Detalle: '+lastError;}
-[fCity,fSede,fAge,fSex].forEach(el=>el.addEventListener('change',render));q.addEventListener('input',render);window.addEventListener('DOMContentLoaded',loadExcel);
+
+const FILE_NAME = "Instrumento 2 - Encuesta Ciudadanos.xlsx";
+
+async function cargarDatos(){
+    try{
+        const response = await fetch(FILE_NAME);
+
+        if(!response.ok){
+            document.getElementById("status").innerHTML =
+            "❌ No se encontró el Excel en el repositorio.";
+            return;
+        }
+
+        const data = await response.arrayBuffer();
+        const workbook = XLSX.read(data, {type:"array"});
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const json = XLSX.utils.sheet_to_json(sheet);
+
+        // 🎯 Aquí cargamos datos
+        document.getElementById("total").innerText = json.length;
+
+        document.getElementById("status").innerHTML =
+        "✅ Datos cargados automáticamente";
+
+    }catch(e){
+        document.getElementById("status").innerHTML =
+        "❌ Error cargando datos: " + e.message;
+    }
+}
+
+cargarDatos();
+
 </script>
-</body></html>
+
+</body>
+</html>
