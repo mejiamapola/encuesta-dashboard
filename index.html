@@ -1,46 +1,47 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
 <title>Dashboard Encuesta Ciudadanos</title>
 
+<!-- Librería para leer Excel -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
-body{
+body {
     margin:0;
-    font-family:Arial;
+    font-family: Arial;
     background:#081126;
     color:white;
 }
 
-.container{
+.container {
     padding:30px;
 }
 
-h1{
+h1 {
     font-size:40px;
-    margin-bottom:10px;
 }
 
-.status{
-    margin:20px 0;
+.status {
+    margin-top:20px;
     padding:15px;
     background:#0f1f3d;
     border-radius:10px;
 }
 
-.metric{
-    font-size:28px;
+.metric {
+    font-size:35px;
     font-weight:bold;
 }
 
-.card{
+.card {
     background:#0f1f3d;
     padding:20px;
     border-radius:15px;
-    margin-top:15px;
+    margin-top:20px;
 }
 </style>
 </head>
@@ -49,55 +50,54 @@ h1{
 
 <div class="container">
 
-    <h1>Insight Hub de atención ciudadana</h1>
+<h1>Insight Hub de atención ciudadana</h1>
 
-    <div id="status" class="status">
-        Cargando datos automáticamente...
-    </div>
+<div id="status" class="status">
+Cargando datos automáticamente...
+</div>
 
-    <div class="card">
-        <div>Total respuestas:</div>
-        <div id="total" class="metric">0</div>
-    </div>
+<div class="card">
+    <div>Total respuestas</div>
+    <div id="total" class="metric">0</div>
+</div>
 
 </div>
 
 <script>
 
-const FILE_NAME = "Instrumento 2 - Encuesta Ciudadanos.xlsx";
+const FILE_URL = "./Instrumento 2 - Encuesta Ciudadanos.xlsx";
 
-async function cargarDatos(){
-    try{
-        const response = await fetch(FILE_NAME);
+async function cargarDatos() {
+    try {
+        const res = await fetch(FILE_URL);
 
-        if(!response.ok){
+        if (!res.ok) {
             document.getElementById("status").innerHTML =
-            "❌ No se encontró el Excel en el repositorio.";
+            "❌ No se encontró el Excel en el repositorio";
             return;
         }
 
-        const data = await response.arrayBuffer();
-        const workbook = XLSX.read(data, {type:"array"});
+        const buffer = await res.arrayBuffer();
+        const workbook = XLSX.read(buffer, {type:"array"});
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const json = XLSX.utils.sheet_to_json(sheet);
+        const data = XLSX.utils.sheet_to_json(sheet);
 
-        // 🎯 Aquí cargamos datos
-        document.getElementById("total").innerText = json.length;
+        // ✅ CARGA DE DATOS
+        document.getElementById("total").innerText = data.length;
 
         document.getElementById("status").innerHTML =
-        "✅ Datos cargados automáticamente";
+        "✅ Datos cargados automáticamente (" + data.length + " registros)";
 
-    }catch(e){
+    } catch (error) {
         document.getElementById("status").innerHTML =
-        "❌ Error cargando datos: " + e.message;
+        "❌ Error cargando datos: " + error.message;
     }
 }
 
+// Ejecutar automáticamente
 cargarDatos();
 
 </script>
 
 </body>
 </html>
-
-
