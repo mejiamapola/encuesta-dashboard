@@ -9,18 +9,22 @@
 
 <style>
 :root{
-  --bg:#050816;
-  --panel:#0B1430;
-  --panel2:#101D3D;
-  --line:rgba(255,255,255,.12);
-  --text:#F8FBFF;
-  --muted:#A8B3CC;
-  --cyan:#21E6FF;
-  --green:#45F2AC;
-  --purple:#9E62FF;
-  --amber:#FFD166;
-  --red:#FF5C7A;
-  --shadow:0 24px 80px rgba(0,0,0,.42);
+  --bg:#001F5B;
+  --panel:#003A8C;
+  --panel2:#002C73;
+
+  --line:rgba(255,255,255,.18);
+
+  --text:#FFFFFF;
+  --muted:#D7E3FF;
+
+  --cyan:#FFE000;      /* Amarillo PGN */
+  --green:#FFE000;     /* Reutilizado para indicadores */
+  --purple:#003A8C;    /* Azul institucional */
+  --amber:#FFE000;
+  --red:#D81E05;
+
+  --shadow:0 24px 80px rgba(0,0,0,.45);
 }
 
 *{
@@ -33,7 +37,10 @@ body{
   font-family:Segoe UI, Inter, Roboto, Arial, sans-serif;
   color:var(--text);
   background:
-    radial-gradient(circle at 10% 0%, #173B7B 0%, #081126 34%, #050816 100%);
+  radial-gradient(circle at top left,
+  #0B4DBA 0%,
+  #003A8C 35%,
+  #001F5B 100%);
 }
 
 .wrap{
@@ -62,11 +69,7 @@ body{
 }
 
 .kicker{
-  font-size:12px;
-  letter-spacing:.20em;
-  text-transform:uppercase;
-  color:var(--cyan);
-  font-weight:900;
+   color:var(--cyan);
 }
 
 h1{
@@ -267,18 +270,27 @@ input[type="search"]{
 }
 
 .fill{
-  height:100%;
-  border-radius:999px;
-  background:linear-gradient(90deg, var(--cyan), var(--purple));
-  box-shadow:0 0 20px rgba(33,230,255,.24);
+  background:linear-gradient(
+    90deg,
+    #FFE000,
+    #FFB800
+  );
 }
 
 .fill.green{
-  background:linear-gradient(90deg, var(--green), var(--cyan));
+  background:linear-gradient(
+    90deg,
+    #FFE000,
+    #FFD000
+  );
 }
 
 .fill.amber{
-  background:linear-gradient(90deg, var(--amber), var(--purple));
+  background:linear-gradient(
+    90deg,
+    #FFE000,
+    #D81E05
+  );
 }
 
 .fill.red{
@@ -417,6 +429,14 @@ td{
     <div class="card pad">
       <div class="kicker">Encuesta Ciudadanos · Dashboard automático</div>
       <h1>Insight Hub de atención ciudadana</h1>
+      <div style="
+        height:6px;
+        width:240px;
+        background:#D81E05;
+        border-radius:999px;
+        margin-bottom:20px;">
+      </div>
+      
       <div class="subtitle">
         Dashboard ejecutivo con carga automática del archivo Excel publicado en el mismo repositorio.
         El cliente solo abre el enlace y visualiza los resultados sin cargar archivos manualmente.
