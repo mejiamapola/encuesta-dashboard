@@ -263,18 +263,25 @@ input[type="search"]{
 }
 
 .track{
-  height:17px;
-  border-radius:999px;
-  background:rgba(255,255,255,.08);
-  overflow:hidden;
+    height:20px;
+    border-radius:999px;
+    background:rgba(255,255,255,.15);
+    overflow:hidden;
 }
 
 .fill{
-  background:linear-gradient(
-    90deg,
-    #FFE000,
-    #FFB800
-  );
+    height:100%;
+    border-radius:999px;
+
+    background:linear-gradient(
+        90deg,
+        #FFE000 0%,
+        #FFD100 50%,
+        #FFB800 100%
+    );
+
+    box-shadow:
+        0 0 12px rgba(255,224,0,.5);
 }
 
 .fill.green{
