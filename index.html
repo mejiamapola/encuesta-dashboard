@@ -15,9 +15,9 @@
 
   --line:rgba(255,255,255,.18);
 
-  --text:#FFFFFF;
-  --muted:#D7E3FF;
-
+--text:#003A8C;
+--muted:#5C6E91;
+  
   --cyan:#FFE000;      /* Amarillo PGN */
   --green:#FFE000;     /* Reutilizado para indicadores */
   --purple:#003A8C;    /* Azul institucional */
@@ -32,15 +32,14 @@
 }
 
 body{
-  margin:0;
-  min-height:100vh;
-  font-family:Segoe UI, Inter, Roboto, Arial, sans-serif;
-  color:var(--text);
-  background:
-  radial-gradient(circle at top left,
-  #0B4DBA 0%,
-  #003A8C 35%,
-  #001F5B 100%);
+    margin:0;
+    min-height:100vh;
+
+    font-family:'Segoe UI',sans-serif;
+
+    background:#FFFFFF;
+
+    color:#003A8C;
 }
 
 .wrap{
@@ -56,13 +55,16 @@ body{
 }
 
 .card{
-  background:linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,.035));
-  border:1px solid var(--line);
+  background:#FFFFFF;
+
+  border:1px solid #DCE5F8;
+
+  box-shadow:
+      0 8px 25px rgba(0,58,140,.08);
+
   border-radius:28px;
-  box-shadow:var(--shadow);
-  backdrop-filter:blur(14px);
-  overflow:hidden;
 }
+
 
 .pad{
   padding:30px;
@@ -116,8 +118,7 @@ h1{
 }
 
 .status{
-  color:#D9F8FF;
-  font-weight:800;
+    color:#003A8C;
 }
 
 .score{
@@ -263,25 +264,18 @@ input[type="search"]{
 }
 
 .track{
-    height:20px;
-    border-radius:999px;
-    background:rgba(255,255,255,.15);
-    overflow:hidden;
+    background:#E7EEF9;
 }
 
 .fill{
-    height:100%;
-    border-radius:999px;
-
     background:linear-gradient(
         90deg,
-        #FFE000 0%,
-        #FFD100 50%,
-        #FFB800 100%
+        #FFE000,
+        #FFB800
     );
 
     box-shadow:
-        0 0 12px rgba(255,224,0,.5);
+        0 0 12px rgba(255,224,0,.25);
 }
 
 .fill.green{
@@ -337,8 +331,9 @@ th{
   position:sticky;
   top:0;
   z-index:2;
-  background:#0B1430;
-  color:#CFF7FF;
+  background:white;
+color:#003A8C;
+border:1px solid #DCE5F8;
 }
 
 td{
@@ -354,7 +349,7 @@ td{
 .tag{
   padding:10px 13px;
   border-radius:999px;
-  background:rgba(255,255,255,.07);
+  background:#FFFBE6;  
   border:1px solid var(--line);
   font-weight:850;
 }
