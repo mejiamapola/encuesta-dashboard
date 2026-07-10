@@ -644,17 +644,15 @@ Resultado consolidado de la encuesta
 let datosOriginales = [];
 let datosFiltrados = [];
 
-const EXCEL_FILE_NAME = "Instrumento 2 - Encuesta Ciudadanos(1-116).xlsx";
-
 const ARCHIVOS_EXCEL = [
-    "./" + encodeURIComponent(EXCEL_FILE_NAME),
-    "./Instrumento%202%20-%20Encuesta%20Ciudadanos(1-116).xlsx",
-    "./Instrumento%202%20-%20Encuesta%20Ciudadanos%281-116%29.xlsx",
-    "./Instrumento 2 - Encuesta Ciudadanos(1-116).xlsx",
-    "./Instrumento%202%20-%20Encuesta%20Ciudadanos.xlsx",
-    "./Instrumento 2 - Encuesta Ciudadanos.xlsx",
-    "https://raw.githubusercontent.com/mejiamapola/encuesta-dashboard/main/" + encodeURIComponent(EXCEL_FILE_NAME),
-    "https://raw.githubusercontent.com/mejiamapola/encuesta-dashboard/master/" + encodeURIComponent(EXCEL_FILE_NAME)
+    "Instrumento 2 - Encuesta Ciudadanos(1-116).xlsx",
+    "Instrumento%202%20-%20Encuesta%20Ciudadanos(1-116).xlsx",
+    "Instrumento%202%20-%20Encuesta%20Ciudadanos%281-116%29.xlsx",
+    "Instrumento 2 - Encuesta Ciudadanos.xlsx",
+    "Instrumento%202%20-%20Encuesta%20Ciudadanos.xlsx",
+    "https://raw.githubusercontent.com/mejiamapola/encuesta-dashboard/main/Instrumento%202%20-%20Encuesta%20Ciudadanos(1-116).xlsx",
+    "https://raw.githubusercontent.com/mejiamapola/encuesta-dashboard/main/Instrumento%202%20-%20Encuesta%20Ciudadanos%281-116%29.xlsx",
+    "https://raw.githubusercontent.com/mejiamapola/encuesta-dashboard/main/Instrumento%202%20-%20Encuesta%20Ciudadanos.xlsx"
 ];
 
 const C = {
@@ -672,9 +670,6 @@ const C = {
     edad: "Edad",
     sexo: "Sexo de nacimiento",
     educacion: "Último Nivel educativo alcanzado",
-    discapacidad: "Se encuentra ud en condición de discapacidad?",
-    grupo: "Se autoreconoce como perteneciente a un grupo étnico",
-    victima: "Se considera o ha sido víctima del conflicto armado en Colombia?",
     mejoraPunto: "Teniendo en cuenta la calificación anterior ¿Qué le mejoraría a este punto de servicio?",
     mejoraServidor: "Teniendo en cuenta la calificación anterior ¿Qué mejoraría a la atención prestada por los servidores?"
 };
@@ -704,7 +699,6 @@ function limpiar(valor){
     if(valor === null || valor === undefined){
         return "";
     }
-
     return String(valor).trim();
 }
 
@@ -719,31 +713,17 @@ function etiqueta(valor){
     return limpiar(valor)
         .replace(/^\d+\.?\s*/,"")
         .replace(/^Opción\s*\d+:\s*/i,"")
-        .replace(/\s+/g," ");
+        .replace(/\s+*g," ");
 }
 
-function numeroCalificacion(valor){
-    const texto = limpiar(valor);
+function numeroCalifica*ion(valor){
+    const texto = limp*ar(valor);
 
-    if(texto.startsWith("5")){
-        return 5;
-    }
-
-    if(texto.startsWith("4")){
-        return 4;
-    }
-
-    if(texto.startsWith("3")){
-        return 3;
-    }
-
-    if(texto.startsWith("2")){
-        return 2;
-    }
-
-    if(texto.startsWith("1")){
-        return 1;
-    }
+    if(texto.startsWit*("5")) return 5;
+    if(texto.star*sWith("4")) return 4;
+    if(texto*startsWith("3")) return 3;
+    if(texto.startsWith("2")) return 2;
+    if(texto.startsWith("1")) return 1;
 
     return null;
 }
@@ -754,10 +734,7 @@ function esSi(valor){
 }
 
 function porcentaje(valor,total){
-    if(!total){
-        return 0;
-    }
-
+    if(!total) return 0;
     return Math.round((valor * 100) / total);
 }
 
@@ -797,13 +774,9 @@ function valoresUnicos(data,columna){
 
 function llenarSelect(id,valores,texto){
     const select = document.getElementById(id);
-
-    if(!select){
-        return;
-    }
+    if(!select) return;
 
     const actual = select.value;
-
     let html = `<option value="">${texto}</option>`;
 
     valores.forEach(valor => {
@@ -825,7 +798,6 @@ function aplicarFiltros(){
     const busqueda = (document.getElementById("busquedaTexto")?.value || "").toLowerCase();
 
     datosFiltrados = datosOriginales.filter(fila => {
-
         const serviciosFila = dividirServicios(fila[C.servicios]);
 
         const okCiudad =
@@ -855,19 +827,14 @@ function promedioColumna(data,columna){
         .map(fila => numeroCalificacion(fila[columna]))
         .filter(valor => valor !== null);
 
-    if(!valores.length){
-        return 0;
-    }
+    if(!valores.length) return 0;
 
     return valores.reduce((a,b) => a + b, 0) / valores.length;
 }
 
 function dibujarBarras(id,items,total){
     const contenedor = document.getElementById(id);
-
-    if(!contenedor){
-        return;
-    }
+    if(!contenedor) return;
 
     if(!items.length){
         contenedor.innerHTML = `
@@ -881,7 +848,6 @@ function dibujarBarras(id,items,total){
     const maximo = Math.max(...items.map(item => item[1]),1);
 
     contenedor.innerHTML = items.map(item => {
-
         const nombre = item[0];
         const valor = item[1];
         const ancho = Math.max(4,(valor / maximo) * 100);
@@ -889,7 +855,6 @@ function dibujarBarras(id,items,total){
 
         return `
             <div class="bar">
-
                 <div class="bar-label">
                     <span>${nombre}</span>
                     <strong>${valor} · ${pct}%</strong>
@@ -898,7 +863,6 @@ function dibujarBarras(id,items,total){
                 <div class="bar-track">
                     <div class="bar-fill" style="width:${ancho}%"></div>
                 </div>
-
             </div>
         `;
     }).join("");
@@ -906,10 +870,7 @@ function dibujarBarras(id,items,total){
 
 function dibujarPromedios(id,columnas,data){
     const contenedor = document.getElementById(id);
-
-    if(!contenedor){
-        return;
-    }
+    if(!contenedor) return;
 
     const items = columnas.map(columna => {
         const promedio = promedioColumna(data,columna);
@@ -924,7 +885,6 @@ function dibujarPromedios(id,columnas,data){
     });
 
     contenedor.innerHTML = items.map(item => {
-
         const pct = Math.round((item.promedio / 5) * 100);
 
         let color = "#D81E05";
@@ -937,7 +897,6 @@ function dibujarPromedios(id,columnas,data){
 
         return `
             <div class="bar">
-
                 <div class="bar-label">
                     <span>${item.nombre}</span>
                     <strong>${item.promedio.toFixed(1)} / 5</strong>
@@ -952,7 +911,6 @@ function dibujarPromedios(id,columnas,data){
                         "
                     ></div>
                 </div>
-
             </div>
         `;
     }).join("");
@@ -960,7 +918,6 @@ function dibujarPromedios(id,columnas,data){
 
 function actualizarKPIs(data){
     const total = data.length;
-
     const sedes = valoresUnicos(data,C.sede).length;
 
     const calificacion = promedioColumna(data,C.calidad);
@@ -976,31 +933,16 @@ function actualizarKPIs(data){
     const tiempoPromedio = document.getElementById("tiempoPromedio");
     const indicadorGeneral = document.getElementById("indicadorGeneral");
 
-    if(totalEncuestas){
-        totalEncuestas.textContent = total;
-    }
-
-    if(totalSedes){
-        totalSedes.textContent = sedes;
-    }
-
-    if(promedioGeneral){
-        promedioGeneral.textContent = satisfaccion + "%";
-    }
-
-    if(tiempoPromedio){
-        tiempoPromedio.textContent = esperaTexto;
-    }
-
-    if(indicadorGeneral){
-        indicadorGeneral.textContent = satisfaccion + "%";
-    }
+    if(totalEncuestas) totalEncuestas.textContent = total;
+    if(totalSedes) totalSedes.textContent = sedes;
+    if(promedioGeneral) promedioGeneral.textContent = satisfaccion + "%";
+    if(tiempoPromedio) tiempoPromedio.textContent = esperaTexto;
+    if(indicadorGeneral) indicadorGeneral.textContent = satisfaccion + "%";
 
     const circle = document.querySelector(".circle");
 
     if(circle){
         const grados = Math.round((satisfaccion / 100) * 360);
-
         circle.style.background =
             `conic-gradient(#FFE000 0deg, #FFE000 ${grados}deg, #E7EEF8 ${grados}deg)`;
     }
@@ -1044,19 +986,11 @@ function pintarCanales(data){
 }
 
 function pintarDemografia(data){
-    const edades = conteo(data.map(fila => etiqueta(fila[C.edad])));
-    const sexo = conteo(data.map(fila => etiqueta(fila[C.sexo])));
-    const educacion = conteo(data.map(fila => etiqueta(fila[C.educacion])));
-
     const demografia = document.getElementById("demografia");
-
-    if(!demografia){
-        return;
-    }
+    if(!demografia) return;
 
     demografia.innerHTML = `
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
-
             <div>
                 <h4 style="margin-bottom:15px;color:#001F5B;">Edad</h4>
                 <div id="demoEdad"></div>
@@ -1071,21 +1005,17 @@ function pintarDemografia(data){
                 <h4 style="margin-bottom:15px;color:#001F5B;">Nivel educativo</h4>
                 <div id="demoEducacion"></div>
             </div>
-
         </div>
     `;
 
-    dibujarBarras("demoEdad",top(edades,6),data.length);
-    dibujarBarras("demoSexo",top(sexo,6),data.length);
-    dibujarBarras("demoEducacion",top(educacion,6),data.length);
+    dibujarBarras("demoEdad",top(conteo(data.map(fila => etiqueta(fila[C.edad]))),6),data.length);
+    dibujarBarras("demoSexo",top(conteo(data.map(fila => etiqueta(fila[C.sexo]))),6),data.length);
+    dibujarBarras("demoEducacion",top(conteo(data.map(fila => etiqueta(fila[C.educacion]))),6),data.length);
 }
 
 function pintarMejoras(data){
     const tabla = document.getElementById("tablaMejoras");
-
-    if(!tabla){
-        return;
-    }
+    if(!tabla) return;
 
     const aspectos = [
         ...infraestructuraCols,
@@ -1117,10 +1047,7 @@ function pintarMejoras(data){
 
 function pintarComentarios(data){
     const contenedor = document.getElementById("comentarios");
-
-    if(!contenedor){
-        return;
-    }
+    if(!contenedor) return;
 
     const comentarios = [];
 
@@ -1258,11 +1185,10 @@ function inicializarFiltros(){
 function validarArchivoExcel(buffer){
     const bytes = new Uint8Array(buffer.slice(0,4));
 
-    const firmaZip =
+    return (
         bytes[0] === 0x50 &&
-        bytes[1] === 0x4B;
-
-    return firmaZip;
+        bytes[1] === 0x4B
+    );
 }
 
 async function cargarExcel(){
@@ -1283,9 +1209,7 @@ async function cargarExcel(){
     let ultimoError = "";
 
     for(const archivo of ARCHIVOS_EXCEL){
-
         try{
-
             const respuesta = await fetch(
                 archivo + "?v=" + Date.now(),
                 {
@@ -1333,7 +1257,6 @@ async function cargarExcel(){
             }
 
             return;
-
         }catch(error){
             ultimoError = archivo + " - " + error.message;
         }
