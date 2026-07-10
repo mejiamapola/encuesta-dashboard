@@ -2086,20 +2086,81 @@ Prioridad
     }
 
     function llenarFiltros(){
-        llenarSelect("filtroArea", valoresUnicos(datosOriginales,C.sede), "Todas las áreas");
-        llenarSelect("filtroCargo", valoresUnicos(datosOriginales,C.cargo), "Todos los cargos");
-        llenarSelect("filtroSede", valoresUnicos(datosOriginales,C.sede), "Todas las sedes");
 
-        const filtroArea = document.getElementById("filtroArea");
-        const filtroCargo = document.getElementById("filtroCargo");
-        const filtroSede = document.getElementById("filtroSede");
-        const textoBusqueda = document.getElementById("textoBusqueda");
+    function llenarSelect(id, valores, textoInicial){
 
-        if(filtroArea) filtroArea.addEventListener("change", aplicarFiltros);
-        if(filtroCargo) filtroCargo.addEventListener("change", aplicarFiltros);
-        if(filtroSede) filtroSede.addEventListener("change", aplicarFiltros);
-        if(textoBusqueda) textoBusqueda.addEventListener("input", aplicarFiltros);
+        var select = document.getElementById(id);
+
+        if(!select){
+            return;
+        }
+
+        var valorActual = select.value;
+
+        var html = '<option value="">' + textoInicial + '</option>';
+
+        valores.forEach(function(valor){
+
+            var limpio = String(valor || "").trim();
+
+            if(limpio !== ""){
+
+                var seguro = limpio.replace(/"/g, "&quot;");
+
+                html += '<option value="' + seguro + '">' + limpio + '</option>';
+
+            }
+
+        });
+
+        select.innerHTML = html;
+
+        if(valores.indexOf(valorActual) >= 0){
+            select.value = valorActual;
+        }
+
     }
+
+    llenarSelect(
+        "filtroArea",
+        valoresUnicos(datosOriginales, C.sede),
+        "Todas las áreas"
+    );
+
+    llenarSelect(
+        "filtroCargo",
+        valoresUnicos(datosOriginales, C.cargo),
+        "Todos los cargos"
+    );
+
+    llenarSelect(
+        "filtroSede",
+        valoresUnicos(datosOriginales, C.sede),
+        "Todas las sedes"
+    );
+
+    var filtroArea = document.getElementById("filtroArea");
+    var filtroCargo = document.getElementById("filtroCargo");
+    var filtroSede = document.getElementById("filtroSede");
+    var textoBusqueda = document.getElementById("textoBusqueda");
+
+    if(filtroArea){
+        filtroArea.onchange = aplicarFiltros;
+    }
+
+    if(filtroCargo){
+        filtroCargo.onchange = aplicarFiltros;
+    }
+
+    if(filtroSede){
+        filtroSede.onchange = aplicarFiltros;
+    }
+
+    if(textoBusqueda){
+        textoBusqueda.oninput = aplicarFiltros;
+    }
+
+}
 
     function actualizarTodo(){
         const data = datosFiltrados;
