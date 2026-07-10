@@ -660,31 +660,28 @@ Resultado consolidado
 <script>
 (function(){
 
-    const estado = document.getElementById("estadoCarga");
+    var estado = document.getElementById("estadoCarga");
 
     if(estado){
-        estado.innerHTML = "Script iniciado. Preparando carga del Excel...";
+        estado.innerHTML = "Script activo. Iniciando carga de datos...";
     }
 
-    window.onerror = function(mensaje, archivo, linea){
+    window.onerror = function(msg, url, line){
         if(estado){
-            estado.innerHTML =
-                "ERROR JAVASCRIPT:<br>" +
-                mensaje +
-                "<br>Línea: " + linea;
+            estado.innerHTML = "ERROR JAVASCRIPT:<br>" + msg + "<br>Línea: " + line;
         }
     };
 
-    let datosOriginales = [];
-    let datosFiltrados = [];
+    var datosOriginales = [];
+    var datosFiltrados = [];
 
-    const EXCEL_NOMBRE = "Instrumento 3 - Encuesta Servidores(1-219).xlsx";
+    var EXCEL_NOMBRE = "Instrumento 3 - Encuesta Servidores(1-219).xlsx";
 
-    const EXCEL_URLS = [
+    var EXCEL_URLS = [
         "./Instrumento%203%20-%20Encuesta%20Servidores%281-219%29.xlsx",
         "./Instrumento%203%20-%20Encuesta%20Servidores(1-219).xlsx",
-        "./" + encodeURIComponent(EXCEL_NOMBRE),
         "./" + EXCEL_NOMBRE,
+        "./" + encodeURIComponent(EXCEL_NOMBRE),
         "Instrumento%203%20-%20Encuesta%20Servidores%281-219%29.xlsx",
         "Instrumento%203%20-%20Encuesta%20Servidores(1-219).xlsx",
         "Instrumento 3 - Encuesta Servidores(1-219).xlsx",
@@ -692,7 +689,7 @@ Resultado consolidado
         "https://raw.githubusercontent.com/mejiamapola/encuesta-dashboard/master/Instrumento%203%20-%20Encuesta%20Servidores%281-219%29.xlsx"
     ];
 
-    const C = {
+    var C = {
         sede: "Nombre de la Sede (Tipo / Descripción)",
         servicios: "Seleccione el o los servicios que usted presta.",
         servidor: "Nombre del Servidor Público",
@@ -722,7 +719,6 @@ Resultado consolidado
         etnico: "Tiene conocimientos para brindar atención diferencial a grupos poblacionales con pertenencia etnica?",
         discapacidad: "Tiene conocimientos para brindar atención diferencial a grupos poblacionales con discapacidades?",
         formacionDiferencial: "Ha recibido formación desde la PGN para brindar atención con enfoques diferenciales de género, – incluyendo sexo, orientación sexual e identidad de género -, el ciclovital, la discapacidad, la per...",
-        rutasVBG: "Como se maneja el tema de primer respondiente en casos de VBG (violencias basadas en genero), riesgos de protección urgente u otras rutas críticas?",
         victimas: "Conoce las rutas de atención para población vítima del conflicto armado?",
         migrante: "Considera si dentro del modelo de servicio al ciudadano de la procuraduría se brinda atención diferencial a población migrante?",
         infancia: "Conoce las rutas de atención diferencial para casos relacionados con primera infancia, niños, niñas y adolecentes?",
@@ -735,7 +731,7 @@ Resultado consolidado
         grupoEtnico: "Se autoreconoce como perteneciente a un grupo étnico"
     };
 
-    const CALIFICACIONES = [
+    var CALIFICACIONES = [
         "Claridad de la información",
         "Rapidez en la atención",
         "Sencillez de los procesos y procedimientos",
@@ -751,7 +747,7 @@ Resultado consolidado
         "Cantidad de ventanillas/modulos"
     ];
 
-    const DIFERENCIAL = [
+    var DIFERENCIAL = [
         C.manualDiferencial,
         C.serviciosDiscapacidad,
         C.herramientasDiscapacidad,
@@ -763,72 +759,100 @@ Resultado consolidado
         C.infancia
     ];
 
-    function limpiar(valor){
-        if(valor === null || valor === undefined){
-            return "";
-        }
+    function cargarLibreriaXLSX(){
+        return new Promise(function(resolve,reject){
 
-        return String(valor).trim();
+            if(window.XLSX){
+                resolve();
+                return;
+            }
+
+            var s = document.createElement("script");
+            s.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
+
+            s.onload = function(){
+                if(window.XLSX){
+                    resolve();
+                }else{
+                    reject(new Error("La librería XLSX no quedó disponible."));
+                }
+            };
+
+            s.onerror = function(){
+                reject(new Error("No se pudo cargar la librería XLSX desde CDN."));
+            };
+
+            document.head.appendChild(s);
+        });
     }
 
-    function normalizar(valor){
-        return limpiar(valor)
+    function limpiar(v){
+        if(v === null || v === undefined){
+            return "";
+        }
+        return String(v).trim();
+    }
+
+    function normalizar(v){
+        return limpiar(v)
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g,"")
             .toLowerCase();
     }
 
-    function etiqueta(valor){
-        return limpiar(valor)
+    function etiqueta(v){
+        return limpiar(v)
             .replace(/^\d+\.?\s*/,"")
             .replace(/^Opción\s*\d+:\s*/i,"")
-            .replace(*\s+/g," ");
+            .replace(/\s+/g," ");
     }
 
-    function nu*ero(valor){
-        const texto = *impiar(valor);
+    function numero(v){
+        var t = limpiar(v);
 
-        if(texto.s*artsWith("5")) return 5;
-        i*(texto.startsWith("4")) return 4;
-*       if(texto.startsWith("3")) r*turn 3;
-        if(texto.startsWit*("2")) return 2;
-        if(texto.*tartsWith("1")) return 1;
+        if(t.indexOf("5") === 0) return 5;
+        if(t.indexOf("4") === 0) return 4;
+        if(t.indexOf("3") === 0) return 3;
+        if(t.indexOf("2") === 0) return 2;
+        if(t.indexOf("1") === 0) return 1;
 
-       *const n = Number(texto);
+        var n = Number(t);
 
-        *f(!isNaN(n) && n > 0){
-           *return n;
+        if(!isNaN(n) && n > 0){
+            return n;
         }
 
-        retur* null;
+        return null;
     }
 
-    function esSi(va*or){
-        const texto = normali*ar(valor);
-        return texto ==* "si" || texto === "sí" || texto.s*artsWith("1 si") || texto.startsWi*h("1 sí");
+    function esSi(v){
+        var t = normalizar(v);
+        return t === "si" || t === "sí" || t.indexOf("1 si") === 0 || t.indexOf("1 sí") === 0;
     }
 
-    function por*entaje(valor,total){
-        if(!t*tal) return 0;
-        return Math*round((valor * 100) / total);
-    *
+    function porcentaje(a,b){
+        if(!b){
+            return 0;
+        }
+        return Math.round((a * 100) / b);
+    }
 
-    function partir(valor){
-    *   return limpiar(valor)
-         *  .split(";")
-            .map(fun*tion(x){
-                return et*queta(x);
+    function partir(v){
+        return limpiar(v)
+            .split(";")
+            .map(function(x){
+                return etiqueta(x);
             })
-         *  .filter(function(x){
+            .filter(function(x){
                 return x.length > 0;
             });
     }
 
     function conteo(lista){
-        const mapa = {};
+        var mapa = {};
 
-        lista.forEach(function(item){
-            const clave = etiqueta(item) || "Sin dato";
+        lista.forEach(function(x){
+            var clave = etiqueta(x) || "Sin dato";
             mapa[clave] = (mapa[clave] || 0) + 1;
         });
 
@@ -844,8 +868,8 @@ Resultado consolidado
     }
 
     function valoresUnicos(data,columna){
-        return [
-            ...new Set(
+        return Array.from(
+            new Set(
                 data
                     .map(function(row){
                         return etiqueta(row[columna]);
@@ -854,27 +878,32 @@ Resultado consolidado
                         return x.length > 0;
                     })
             )
-        ].sort();
+        ).sort();
     }
 
     function barras(id,items,total){
-        const div = document.getElementById(id);
+        var div = document.getElementById(id);
 
-        if(!div) return;
+        if(!div){
+            return;
+        }
 
         if(!items.length){
             div.innerHTML = "<p style='color:#61779D'>Sin datos para este filtro.</p>";
             return;
         }
 
-        const max = Math.max(...items.map(function(x){ return x[1]; }),1);
+        var max = Math.max.apply(null,items.map(function(x){ return x[1]; }));
+        if(!max || max < 1){
+            max = 1;
+        }
 
         div.innerHTML = items.map(function(item){
 
-            const nombre = item[0];
-            const valor = item[1];
-            const ancho = Math.max(4,(valor / max) * 100);
-            const pct = porcentaje(valor,total);
+            var nombre = item[0];
+            var valor = item[1];
+            var ancho = Math.max(4,(valor / max) * 100);
+            var pct = porcentaje(valor,total);
 
             return `
                 <div class="bar">
@@ -891,17 +920,19 @@ Resultado consolidado
     }
 
     function barrasPromedio(id,columnas,data){
-        const div = document.getElementById(id);
+        var div = document.getElementById(id);
 
-        if(!div) return;
+        if(!div){
+            return;
+        }
 
-        const items = columnas.map(function(columna){
+        div.innerHTML = columnas.map(function(columna){
 
-            let suma = 0;
-            let total = 0;
+            var suma = 0;
+            var total = 0;
 
             data.forEach(function(row){
-                const n = numero(row[columna]);
+                var n = numero(row[columna]);
 
                 if(n !== null){
                     suma += n;
@@ -909,35 +940,25 @@ Resultado consolidado
                 }
             });
 
-            const promedio = total ? suma / total : 0;
-            const pct = Math.round((promedio / 5) * 100);
+            var promedio = total ? suma / total : 0;
+            var pct = Math.round((promedio / 5) * 100);
 
-            return {
-                nombre: columna,
-                promedio: promedio,
-                pct: pct
-            };
+            var color = "#D81E05";
 
-        });
-
-        div.innerHTML = items.map(function(item){
-
-            let color = "#D81E05";
-
-            if(item.pct >= 80){
+            if(pct >= 80){
                 color = "#0E9F6E";
-            }else if(item.pct >= 60){
+            }else if(pct >= 60){
                 color = "#FFC400";
             }
 
             return `
                 <div class="bar">
                     <div class="bar-label">
-                        <span>${item.nombre}</span>
-                        <strong>${item.promedio.toFixed(1)} / 5</strong>
+                        <span>${columna}</span>
+                        <strong>${promedio.toFixed(1)} / 5</strong>
                     </div>
                     <div class="bar-track">
-                        <div class="bar-fill" style="width:${item.pct}%;background:${color};"></div>
+                        <div class="bar-fill" style="width:${pct}%;background:${color};"></div>
                     </div>
                 </div>
             `;
@@ -945,12 +966,12 @@ Resultado consolidado
     }
 
     function promedioGeneral(data){
-        let suma = 0;
-        let total = 0;
+        var suma = 0;
+        var total = 0;
 
         CALIFICACIONES.forEach(function(columna){
             data.forEach(function(row){
-                const n = numero(row[columna]);
+                var n = numero(row[columna]);
 
                 if(n !== null){
                     suma += n;
@@ -959,47 +980,50 @@ Resultado consolidado
             });
         });
 
-        if(!total) return 0;
+        if(!total){
+            return 0;
+        }
 
         return suma / total;
     }
 
     function llenarSelect(id,valores,textoInicial){
-        const select = document.getElementById(id);
+        var select = document.getElementById(id);
 
-        if(!select) return;
+        if(!select){
+            return;
+        }
 
-        const actual = select.value;
-
-        let html = `<option value="">${textoInicial}</option>`;
+        var actual = select.value;
+        var html = '<option value="">' + textoInicial + '</option>';
 
         valores.forEach(function(valor){
-            const seguro = String(valor).replace(/"/g,"&quot;");
-            html += `<option value="${seguro}">${valor}</option>`;
+            var seguro = String(valor).replace(/"/g,"&quot;");
+            html += '<option value="' + seguro + '">' + valor + '</option>';
         });
 
         select.innerHTML = html;
 
-        if(valores.includes(actual)){
+        if(valores.indexOf(actual) >= 0){
             select.value = actual;
         }
     }
 
     function aplicarFiltros(){
-        const area = document.getElementById("filtroArea") ? document.getElementById("filtroArea").value : "";
-        const cargo = document.getElementById("filtroCargo") ? document.getElementById("filtroCargo").value : "";
-        const sede = document.getElementById("filtroSede") ? document.getElementById("filtroSede").value : "";
-        const texto = document.getElementById("textoBusqueda") ? document.getElementById("textoBusqueda").value.toLowerCase() : "";
+        var area = document.getElementById("filtroArea") ? document.getElementById("filtroArea").value : "";
+        var cargo = document.getElementById("filtroCargo") ? document.getElementById("filtroCargo").value : "";
+        var sede = document.getElementById("filtroSede") ? document.getElementById("filtroSede").value : "";
+        var texto = document.getElementById("textoBusqueda") ? document.getElementById("textoBusqueda").value.toLowerCase() : "";
 
         datosFiltrados = datosOriginales.filter(function(row){
 
-            const valorSede = etiqueta(row[C.sede]);
-            const valorCargo = etiqueta(row[C.cargo]);
+            var valorSede = etiqueta(row[C.sede]);
+            var valorCargo = etiqueta(row[C.cargo]);
 
-            const okArea = !area || valorSede === area;
-            const okCargo = !cargo || valorCargo === cargo;
-            const okSede = !sede || valorSede === sede;
-            const okTexto = !texto || Object.values(row).join(" ").toLowerCase().includes(texto);
+            var okArea = !area || valorSede === area;
+            var okCargo = !cargo || valorCargo === cargo;
+            var okSede = !sede || valorSede === sede;
+            var okTexto = !texto || Object.values(row).join(" ").toLowerCase().indexOf(texto) >= 0;
 
             return okArea && okCargo && okSede && okTexto;
         });
@@ -1008,29 +1032,37 @@ Resultado consolidado
     }
 
     function actualizarKPIs(){
-        const total = datosFiltrados.length;
-        const sedes = valoresUnicos(datosFiltrados,C.sede).length;
-        const cargos = valoresUnicos(datosFiltrados,C.cargo).length;
-        const indicador = Math.round((promedioGeneral(datosFiltrados) / 5) * 100);
+        var total = datosFiltrados.length;
+        var sedes = valoresUnicos(datosFiltrados,C.sede).length;
+        var cargos = valoresUnicos(datosFiltrados,C.cargo).length;
+        var indicador = Math.round((promedioGeneral(datosFiltrados) / 5) * 100);
 
-        const totalEncuestas = document.getElementById("totalEncuestas");
-        const totalAreas = document.getElementById("totalAreas");
-        const totalCargos = document.getElementById("totalCargos");
-        const porcentajePositivo = document.getElementById("porcentajePositivo");
-        const indicadorGeneral = document.getElementById("indicadorGeneral");
+        if(document.getElementById("totalEncuestas")){
+            document.getElementById("totalEncuestas").textContent = total;
+        }
 
-        if(totalEncuestas) totalEncuestas.textContent = total;
-        if(totalAreas) totalAreas.textContent = sedes;
-        if(totalCargos) totalCargos.textContent = cargos;
-        if(porcentajePositivo) porcentajePositivo.textContent = indicador + "%";
-        if(indicadorGeneral) indicadorGeneral.textContent = indicador + "%";
+        if(document.getElementById("totalAreas")){
+            document.getElementById("totalAreas").textContent = sedes;
+        }
 
-        const circle = document.querySelector(".circle");
+        if(document.getElementById("totalCargos")){
+            document.getElementById("totalCargos").textContent = cargos;
+        }
+
+        if(document.getElementById("porcentajePositivo")){
+            document.getElementById("porcentajePositivo").textContent = indicador + "%";
+        }
+
+        if(document.getElementById("indicadorGeneral")){
+            document.getElementById("indicadorGeneral").textContent = indicador + "%";
+        }
+
+        var circle = document.querySelector(".circle");
 
         if(circle){
-            const grados = Math.round(indicador * 3.6);
+            var grados = Math.round(indicador * 3.6);
             circle.style.background =
-                `conic-gradient(#FFE000 0deg,#FFE000 ${grados}deg,#E6EDF8 ${grados}deg)`;
+                "conic-gradient(#FFE000 0deg,#FFE000 " + grados + "deg,#E6EDF8 " + grados + "deg)";
         }
     }
 
@@ -1045,7 +1077,7 @@ Resultado consolidado
             datosFiltrados.length
         );
 
-        const conocimiento = [
+        var conocimiento = [
             ["Conoce trámites", datosFiltrados.filter(function(row){ return esSi(row[C.conoceTramites]); }).length],
             ["Ciudadano conoce trámites", datosFiltrados.filter(function(row){ return esSi(row[C.ciudadanoConoce]); }).length],
             ["Identifica ventanilla", datosFiltrados.filter(function(row){ return esSi(row[C.identificaVentanilla]); }).length],
@@ -1071,7 +1103,7 @@ Resultado consolidado
             datosFiltrados.length
         );
 
-        const canales = [];
+        var canales = [];
 
         datosFiltrados.forEach(function(row){
             partir(row[C.canal]).forEach(function(x){
@@ -1081,7 +1113,7 @@ Resultado consolidado
 
         barras("canalesAtencion", top(conteo(canales),10), datosFiltrados.length);
 
-        const obstaculos = [];
+        var obstaculos = [];
 
         datosFiltrados.forEach(function(row){
             partir(row[C.obstaculos]).forEach(function(x){
@@ -1093,7 +1125,7 @@ Resultado consolidado
 
         barrasPromedio("condicionesServicio", CALIFICACIONES, datosFiltrados);
 
-        const diferencialItems = DIFERENCIAL.map(function(columna){
+        var diferencialItems = DIFERENCIAL.map(function(columna){
             return [
                 columna,
                 datosFiltrados.filter(function(row){
@@ -1104,12 +1136,13 @@ Resultado consolidado
 
         barras("semaforoResultados", diferencialItems, datosFiltrados.length);
 
-        const riesgos = CALIFICACIONES.map(function(columna){
-            let suma = 0;
-            let total = 0;
+        var riesgos = CALIFICACIONES.map(function(columna){
+
+            var suma = 0;
+            var total = 0;
 
             datosFiltrados.forEach(function(row){
-                const n = numero(row[columna]);
+                var n = numero(row[columna]);
 
                 if(n !== null){
                     suma += n;
@@ -1117,7 +1150,7 @@ Resultado consolidado
                 }
             });
 
-            const promedio = total ? suma / total : 0;
+            var promedio = total ? suma / total : 0;
 
             return {
                 columna: columna,
@@ -1132,7 +1165,7 @@ Resultado consolidado
         })
         .slice(0,10);
 
-        const tablaRiesgos = document.getElementById("tablaRiesgos");
+        var tablaRiesgos = document.getElementById("tablaRiesgos");
 
         if(tablaRiesgos){
             tablaRiesgos.innerHTML = riesgos.map(function(item){
@@ -1145,7 +1178,7 @@ Resultado consolidado
             }).join("");
         }
 
-        const comentarios = [];
+        var comentarios = [];
 
         datosFiltrados.forEach(function(row){
             [
@@ -1153,10 +1186,9 @@ Resultado consolidado
                 C.tiempoDescripcion,
                 C.obstaculos,
                 C.mejoraPunto,
-                C.mejoraCiudadano,
-                C.rutasVBG
+                C.mejoraCiudadano
             ].forEach(function(columna){
-                const texto = limpiar(row[columna]);
+                var texto = limpiar(row[columna]);
 
                 if(texto.length > 15){
                     comentarios.push(texto);
@@ -1164,7 +1196,7 @@ Resultado consolidado
             });
         });
 
-        const observaciones = document.getElementById("observaciones");
+        var observaciones = document.getElementById("observaciones");
 
         if(observaciones){
             observaciones.innerHTML = comentarios.slice(0,20).map(function(texto){
@@ -1183,27 +1215,23 @@ Resultado consolidado
             }).join("");
         }
 
-        const indicador = Math.round((promedioGeneral(datosFiltrados) / 5) * 100);
-        const capacitados = porcentaje(datosFiltrados.filter(function(row){ return esSi(row[C.capacitacion]); }).length, datosFiltrados.length);
-        const noCompetencia = porcentaje(datosFiltrados.filter(function(row){ return esSi(row[C.noCompetencia]); }).length, datosFiltrados.length);
+        var indicador = Math.round((promedioGeneral(datosFiltrados) / 5) * 100);
+        var capacitados = porcentaje(datosFiltrados.filter(function(row){ return esSi(row[C.capacitacion]); }).length, datosFiltrados.length);
+        var noCompetencia = porcentaje(datosFiltrados.filter(function(row){ return esSi(row[C.noCompetencia]); }).length, datosFiltrados.length);
 
-        const insight1 = document.getElementById("insight1");
-        const insight2 = document.getElementById("insight2");
-        const insight3 = document.getElementById("insight3");
-
-        if(insight1){
-            insight1.innerHTML =
-                `<p style="color:#61779D;line-height:1.6;">El resultado general del servicio, calculado sobre las calificaciones operativas, es de <strong>${indicador}%</strong>.</p>`;
+        if(document.getElementById("insight1")){
+            document.getElementById("insight1").innerHTML =
+                '<p style="color:#61779D;line-height:1.6;">El resultado general del servicio, calculado sobre las calificaciones operativas, es de <strong>' + indicador + '%</strong>.</p>';
         }
 
-        if(insight2){
-            insight2.innerHTML =
-                `<p style="color:#61779D;line-height:1.6;">El <strong>${capacitados}%</strong> de los servidores indica haber recibido capacitación o sensibilización en servicio al ciudadano.</p>`;
+        if(document.getElementById("insight2")){
+            document.getElementById("insight2").innerHTML =
+                '<p style="color:#61779D;line-height:1.6;">El <strong>' + capacitados + '%</strong> de los servidores indica haber recibido capacitación o sensibilización en servicio al ciudadano.</p>';
         }
 
-        if(insight3){
-            insight3.innerHTML =
-                `<p style="color:#61779D;line-height:1.6;">El <strong>${noCompetencia}%</strong> reporta recibir ciudadanos con solicitudes que no son competencia de la entidad.</p>`;
+        if(document.getElementById("insight3")){
+            document.getElementById("insight3").innerHTML =
+                '<p style="color:#61779D;line-height:1.6;">El <strong>' + noCompetencia + '%</strong> reporta recibir ciudadanos con solicitudes que no son competencia de la entidad.</p>';
         }
     }
 
@@ -1212,43 +1240,51 @@ Resultado consolidado
         llenarSelect("filtroCargo", valoresUnicos(datosOriginales,C.cargo), "Todos los cargos");
         llenarSelect("filtroSede", valoresUnicos(datosOriginales,C.sede), "Todas las sedes");
 
-        const filtroArea = document.getElementById("filtroArea");
-        const filtroCargo = document.getElementById("filtroCargo");
-        const filtroSede = document.getElementById("filtroSede");
-        const textoBusqueda = document.getElementById("textoBusqueda");
+        if(document.getElementById("filtroArea")){
+            document.getElementById("filtroArea").addEventListener("change", aplicarFiltros);
+        }
 
-        if(filtroArea) filtroArea.addEventListener("change", aplicarFiltros);
-        if(filtroCargo) filtroCargo.addEventListener("change", aplicarFiltros);
-        if(filtroSede) filtroSede.addEventListener("change", aplicarFiltros);
-        if(textoBusqueda) textoBusqueda.addEventListener("input", aplicarFiltros);
+        if(document.getElementById("filtroCargo")){
+            document.getElementById("filtroCargo").addEventListener("change", aplicarFiltros);
+        }
+
+        if(document.getElementById("filtroSede")){
+            document.getElementById("filtroSede").addEventListener("change", aplicarFiltros);
+        }
+
+        if(document.getElementById("textoBusqueda")){
+            document.getElementById("textoBusqueda").addEventListener("input", aplicarFiltros);
+        }
     }
 
     function validarXLSX(buffer){
-        const bytes = new Uint8Array(buffer.slice(0,4));
+        var bytes = new Uint8Array(buffer.slice(0,4));
         return bytes[0] === 0x50 && bytes[1] === 0x4B;
     }
 
     async function cargarExcel(){
         if(estado){
-            estado.innerHTML = "Script iniciado. Buscando archivo Excel...";
+            estado.innerHTML = "Script activo. Cargando librería XLSX...";
         }
 
-        if(typeof XLSX === "undefined"){
-            if(estado){
-                estado.innerHTML = "ERROR: La librería XLSX no está cargada. Revisa la línea del CDN en el head.";
-            }
-            return;
+        await cargarLibreriaXLSX();
+
+        if(estado){
+            estado.innerHTML = "Librería XLSX cargada. Buscando archivo Excel...";
         }
 
-        let ultimoError = "";
+        var ultimoError = "";
 
-        for(const url of EXCEL_URLS){
+        for(var i = 0; i < EXCEL_URLS.length; i++){
+
+            var url = EXCEL_URLS[i];
+
             try{
                 if(estado){
                     estado.innerHTML = "Probando archivo:<br>" + url;
                 }
 
-                const respuesta = await fetch(url + "?v=" + Date.now(), {
+                var respuesta = await fetch(url + "?v=" + Date.now(), {
                     cache: "no-store"
                 });
 
@@ -1257,29 +1293,29 @@ Resultado consolidado
                     continue;
                 }
 
-                const buffer = await respuesta.arrayBuffer();
+                var buffer = await respuesta.arrayBuffer();
 
                 if(!validarXLSX(buffer)){
-                    ultimoError = url + " - La respuesta no es un archivo XLSX.";
+                    ultimoError = url + " - La respuesta no es XLSX.";
                     continue;
                 }
 
-                const libro = XLSX.read(buffer, {
+                var libro = XLSX.read(buffer, {
                     type: "array"
                 });
 
-                const hoja = libro.Sheets[libro.SheetNames[0]];
+                var hoja = libro.Sheets[libro.SheetNames[0]];
 
                 datosOriginales = XLSX.utils.sheet_to_json(hoja, {
                     defval: ""
                 });
 
                 if(!datosOriginales.length){
-                    ultimoError = url + " - El Excel no contiene registros.";
+                    ultimoError = url + " - Excel sin registros.";
                     continue;
                 }
 
-                datosFiltrados = [...datosOriginales];
+                datosFiltrados = datosOriginales.slice();
 
                 inicializarFiltros();
                 actualizarDashboard();
@@ -1300,10 +1336,19 @@ Resultado consolidado
         }
     }
 
-    window.addEventListener("DOMContentLoaded", cargarExcel);
+    cargarExcel().catch(function(error){
+        if(estado){
+            estado.innerHTML = "ERROR FINAL:<br>" + error.message;
+        }
+    });
 
+})();
 </script>
 
+</div>
+
+</body>
+</html>
 </div>
 
 </body>
