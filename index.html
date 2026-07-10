@@ -1,905 +1,317 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Insight Hub | Encuesta Ciudadanos</title>
 
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Centro de Analítica de Encuestas</title>
 
 <style>
+
 :root{
-  --bg:#001F5B;
-  --panel:#003A8C;
-  --panel2:#002C73;
+    --azul:#003A8C;
+    --azulOscuro:#001F5B;
+    --amarillo:#FFE000;
+    --rojo:#D81E05;
 
-  --line:rgba(255,255,255,.18);
-
---text:#003A8C;
---muted:#5C6E91;
-  
-  --cyan:#FFE000;      /* Amarillo PGN */
-  --green:#FFE000;     /* Reutilizado para indicadores */
-  --purple:#003A8C;    /* Azul institucional */
-  --amber:#FFE000;
-  --red:#D81E05;
-
-  --shadow:0 24px 80px rgba(0,0,0,.45);
+    --gris:#F5F7FB;
+    --texto:#003A8C;
 }
 
 *{
-  box-sizing:border-box;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
 body{
-    margin:0;
-    min-height:100vh;
 
     font-family:'Segoe UI',sans-serif;
 
-    background:#FFFFFF;
+    background:white;
 
-    color:#003A8C;
+    min-height:100vh;
+
+    color:var(--texto);
+
 }
 
-.wrap{
-  max-width:1500px;
-  margin:auto;
-  padding:26px;
+.header{
+
+    text-align:center;
+
+    padding:60px 20px 40px;
+
+    background:white;
+
 }
 
-.hero{
-  display:grid;
-  grid-template-columns:1.45fr .8fr;
-  gap:18px;
+.header h1{
+
+    font-size:3rem;
+    font-weight:900;
+
+    margin-bottom:15px;
+
+    color:var(--azul);
+
 }
 
-.card{
-  background:#FFFFFF;
+.linea{
 
-  border:1px solid #DCE5F8;
+    width:180px;
+    height:6px;
 
-  box-shadow:
-      0 8px 25px rgba(0,58,140,.08);
+    background:var(--rojo);
 
-  border-radius:28px;
+    border-radius:999px;
+
+    margin:auto auto 25px auto;
+
 }
 
+.header p{
 
-.pad{
-  padding:30px;
+    font-size:1.1rem;
+    color:#5b6b8f;
+
 }
 
-.kicker{
-   color:var(--cyan);
-}
+.panel{
 
-h1{
-  font-size:58px;
-  line-height:.95;
-  margin:14px 0 12px;
-  font-weight:950;
-}
+    max-width:1400px;
 
-.subtitle{
-  color:var(--muted);
-  font-size:18px;
-  line-height:1.45;
-  max-width:900px;
-}
+    margin:auto;
 
-.statusBox{
-  margin-top:22px;
-  border:1.5px solid rgba(33,230,255,.35);
-  border-radius:22px;
-  padding:15px 18px;
-  background:rgba(33,230,255,.07);
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
+    padding:40px;
 
-.dot{
-  width:12px;
-  height:12px;
-  border-radius:50%;
-  background:var(--amber);
-  box-shadow:0 0 18px var(--amber);
-}
-
-.dot.ok{
-  background:var(--green);
-  box-shadow:0 0 18px var(--green);
-}
-
-.dot.bad{
-  background:var(--red);
-  box-shadow:0 0 18px var(--red);
-}
-
-.status{
-    color:#003A8C;
-}
-
-.score{
-  min-height:350px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:30px;
-}
-
-.ring{
-  --p:0;
-  width:230px;
-  height:230px;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  background:
-    conic-gradient(var(--green) calc(var(--p) * 1%), rgba(255,255,255,.10) 0);
-  position:relative;
-  filter:drop-shadow(0 0 38px rgba(69,242,172,.20));
-  margin-bottom:18px;
-}
-
-.ring::before{
-  content:"";
-  position:absolute;
-  width:158px;
-  height:158px;
-  border-radius:50%;
-  background:#091126;
-}
-
-.ring b{
-  position:relative;
-  font-size:54px;
-  font-weight:950;
-}
-
-.score h2{
-  margin:0 0 8px;
-}
-
-.score small{
-  color:var(--muted);
-  max-width:300px;
-  line-height:1.4;
 }
 
 .grid{
-  display:grid;
-  grid-template-columns:repeat(12, 1fr);
-  gap:18px;
-  margin-top:18px;
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
+
+    gap:30px;
+
 }
 
-.metric{
-  grid-column:span 3;
-  padding:22px;
-}
+.card{
 
-.metric .num{
-  font-size:44px;
-  font-weight:950;
-}
+    text-decoration:none;
 
-.metric .label{
-  color:var(--muted);
-  font-weight:750;
-  margin-top:4px;
-}
+    background:white;
 
-.section{
-  grid-column:span 6;
-  padding:24px;
-}
+    border:1px solid #E2E8F5;
 
-.wide{
-  grid-column:span 12;
-}
+    border-radius:30px;
 
-.third{
-  grid-column:span 4;
-}
+    padding:35px 25px;
 
-.title{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:12px;
-  margin-bottom:16px;
-}
+    text-align:center;
 
-.title h2{
-  margin:0;
-  font-size:23px;
-}
-
-.title span{
-  font-size:12px;
-  color:var(--muted);
-}
-
-.filters{
-  display:grid;
-  grid-template-columns:repeat(5, 1fr);
-  gap:12px;
-}
-
-select,
-input[type="search"]{
-  width:100%;
-  background:#0B1430;
-  color:var(--text);
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:12px 13px;
-  outline:none;
-  font-size:14px;
-}
-
-.bars{
-  display:grid;
-  gap:13px;
-}
-
-.bar{
-  display:grid;
-  grid-template-columns:180px 1fr 70px;
-  gap:12px;
-  align-items:center;
-}
-
-.bar label{
-  font-size:13px;
-  font-weight:750;
-  color:#E8F2FF;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-
-.track{
-    background:#E7EEF9;
-}
-
-.fill{
-    background:linear-gradient(
-        90deg,
-        #FFE000,
-        #FFB800
-    );
+    transition:.3s;
 
     box-shadow:
-        0 0 12px rgba(255,224,0,.25);
+    0 10px 25px rgba(0,58,140,.08);
+
 }
 
-.fill.green{
-  background:linear-gradient(
-    90deg,
-    #FFE000,
-    #FFD000
-  );
+.card:hover{
+
+    transform:translateY(-8px);
+
+    border-color:var(--amarillo);
+
+    box-shadow:
+    0 20px 40px rgba(0,58,140,.15);
+
 }
 
-.fill.amber{
-  background:linear-gradient(
-    90deg,
-    #FFE000,
-    #D81E05
-  );
+.numero{
+
+    width:90px;
+    height:90px;
+
+    margin:auto;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+
+    background:linear-gradient(
+        135deg,
+        var(--amarillo),
+        #FFC400
+    );
+
+    font-size:2.5rem;
+
+    font-weight:900;
+
+    color:var(--azulOscuro);
+
 }
 
-.fill.red{
-  background:linear-gradient(90deg, var(--red), var(--amber));
+.titulo{
+
+    margin-top:20px;
+
+    font-size:1.2rem;
+
+    font-weight:800;
+
+    color:var(--azul);
+
 }
 
-.val{
-  font-weight:900;
-  text-align:right;
+.descripcion{
+
+    margin-top:12px;
+
+    color:#6D7C9B;
+
+    font-size:.95rem;
+
+    line-height:1.5;
+
 }
 
-.val small{
-  color:var(--muted);
-  font-weight:700;
+footer{
+
+    margin-top:70px;
+
+    padding:30px;
+
+    text-align:center;
+
+    color:#7A88A3;
+
+    border-top:1px solid #EAEFF8;
+
 }
 
-.tableWrap{
-  max-height:380px;
-  overflow:auto;
-  border-radius:18px;
-  border:1px solid var(--line);
+.badge{
+
+    display:inline-block;
+
+    margin-top:12px;
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    background:#FFFBE6;
+
+    color:var(--azul);
+
+    font-size:.85rem;
+
+    font-weight:700;
+
 }
 
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-th, td{
-  padding:11px 12px;
-  border-bottom:1px solid rgba(255,255,255,.07);
-  font-size:13px;
-  text-align:left;
-}
-
-th{
-  position:sticky;
-  top:0;
-  z-index:2;
-  background:white;
-color:#003A8C;
-border:1px solid #DCE5F8;
-}
-
-td{
-  color:#DDE8FB;
-}
-
-.cloud{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.tag{
-  padding:10px 13px;
-  border-radius:999px;
-  background:#FFFBE6;  
-  border:1px solid var(--line);
-  font-weight:850;
-}
-
-.tag.hot{
-  background:rgba(255,92,122,.14);
-  border-color:rgba(255,92,122,.35);
-}
-
-.insights{
-  display:grid;
-  grid-template-columns:repeat(3, 1fr);
-  gap:14px;
-}
-
-.insight{
-  border:1px solid var(--line);
-  background:linear-gradient(180deg, rgba(33,230,255,.08), rgba(158,98,255,.06));
-  border-radius:22px;
-  padding:18px;
-}
-
-.insight h3{
-  margin:0 0 8px;
-}
-
-.insight p{
-  margin:0;
-  color:var(--muted);
-  line-height:1.45;
-}
-
-.empty{
-  padding:18px;
-  border-radius:18px;
-  background:rgba(255,209,102,.10);
-  border:1px solid rgba(255,209,102,.30);
-  color:#FFE6A0;
-}
-
-.footer{
-  font-size:12px;
-  color:var(--muted);
-  margin:18px 4px 0;
-}
-
-@media(max-width:980px){
-  .hero{
-    grid-template-columns:1fr;
-  }
-
-  h1{
-    font-size:40px;
-  }
-
-  .metric,
-  .section,
-  .third{
-    grid-column:span 12;
-  }
-
-  .filters,
-  .insights{
-    grid-template-columns:1fr;
-  }
-
-  .bar{
-    grid-template-columns:120px 1fr 58px;
-  }
-}
 </style>
+
 </head>
 
 <body>
 
-<div class="wrap">
+<section class="header">
 
-  <section class="hero">
-    <div class="card pad">
-      <div class="kicker">Encuesta Ciudadanos · Dashboard automático</div>
-      <h1>Insight Hub de atención ciudadana</h1>
-      <div style="
-        height:6px;
-        width:240px;
-        background:#D81E05;
-        border-radius:999px;
-        margin-bottom:20px;">
-      </div>
-      
-      <div class="subtitle">
-        Dashboard ejecutivo con carga automática del archivo Excel publicado en el mismo repositorio.
-        El cliente solo abre el enlace y visualiza los resultados sin cargar archivos manualmente.
-      </div>
+    <h1>Centro de Analítica de Encuestas</h1>
 
-      <div class="statusBox" id="loadingBox">
-        <span id="dot" class="dot"></span>
-        <span id="status" class="status">Cargando datos automáticamente...</span>
-      </div>
-    </div>
+    <div class="linea"></div>
 
-    <div class="card score">
-      <div class="ring" id="ring">
-        <b id="favPct">0%</b>
-      </div>
-      <h2>Percepción favorable</h2>
-      <small>Porcentaje de respuestas calificadas como Bueno o Excelente.</small>
-    </div>
-  </section>
+    <p>
+        Seleccione una encuesta para visualizar el dashboard interactivo
+    </p>
 
-  <section class="grid">
+</section>
 
-    <div class="card metric">
-      <div class="num" id="mTotal">0</div>
-      <div class="label">respuestas</div>
-    </div>
+<section class="panel">
 
-    <div class="card metric">
-      <div class="num" id="mCities">0</div>
-      <div class="label">ciudades / territorios</div>
-    </div>
+<div class="grid">
 
-    <div class="card metric">
-      <div class="num" id="mEffective">0%</div>
-      <div class="label">respuesta efectiva</div>
-    </div>
+    encuesta1.html
+        <div class="numero">1</div>
+        <div class="titulo">Encuesta 1</div>
+        <div class="descripcion">
+            Dashboard interactivo
+        </div>
+    </a>
 
-    <div class="card metric">
-      <div class="num" id="mDigital">0%</div>
-      <div class="label">preferencia digital</div>
-    </div>
+    encuesta-ciudadanos.html
 
-    <div class="card section wide">
-      <div class="title">
-        <h2>Filtros interactivos</h2>
-        <span>Todos los gráficos cambian al instante</span>
-      </div>
+        <div class="numero">2</div>
 
-      <div class="filters">
-        <select id="fCity">
-          <option value="">Ciudad: todas</option>
-        </select>
+        <div class="titulo">
+            Encuesta Ciudadanos
+        </div>
 
-        <select id="fSede">
-          <option value="">Sede: todas</option>
-        </select>
+        <div class="descripcion">
+            Satisfacción, atención y experiencia ciudadana
+        </div>
 
-        <select id="fAge">
-          <option value="">Edad: todas</option>
-        </select>
+        <div class="badge">
+            Disponible
+        </div>
 
-        <select id="fSex">
-          <option value="">Sexo: todos</option>
-        </select>
+    </a>
 
-        <input id="q" type="search" placeholder="Buscar trámite, mejora, sede..." />
-      </div>
-    </div>
+    encuesta3.html
+        <div class="numero">3</div>
+        <div class="titulo">Encuesta 3</div>
+        <div class="descripcion">
+            Dashboard interactivo
+        </div>
+    </a>
 
-    <div class="card section">
-      <div class="title">
-        <h2>Calidad del servicio</h2>
-        <span>Conteo y porcentaje</span>
-      </div>
-      <div class="bars" id="qualityBars"></div>
-    </div>
+    encuesta4.html
+        <div class="numero">4</div>
+        <div class="titulo">Encuesta 4</div>
+        <div class="descripcion">
+            Dashboard interactivo
+        </div>
+    </a>
 
-    <div class="card section">
-      <div class="title">
-        <h2>Tiempo de espera</h2>
-        <span>Distribución</span>
-      </div>
-      <div class="bars" id="waitBars"></div>
-    </div>
+    encuesta5.html
+        <div class="numero">5</div>
+        <div class="titulo">Encuesta 5</div>
+        <div class="descripcion">
+            Dashboard interactivo
+        </div>
+    </a>
 
-    <div class="card section">
-      <div class="title">
-        <h2>Canal preferido</h2>
-        <span>Presencial, internet, teléfono...</span>
-      </div>
-      <div class="bars" id="channelBars"></div>
-    </div>
+    encuesta6.html
+        <div class="numero">6</div>
+        <div class="titulo">Encuesta 6</div>
+        <div class="descripcion">
+            Dashboard interactivo
+        </div>
+    </a>
 
-    <div class="card section">
-      <div class="title">
-        <h2>Tipo de gestión</h2>
-        <span>Motivo principal de visita</span>
-      </div>
-      <div class="bars" id="gestionBars"></div>
-    </div>
-
-    <div class="card section wide">
-      <div class="title">
-        <h2>Ranking de sedes / ciudades</h2>
-        <span>Ordenado por volumen de respuestas</span>
-      </div>
-
-      <div class="tableWrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Ciudad</th>
-              <th>Sede</th>
-              <th>Respuestas</th>
-              <th>Favorabilidad</th>
-              <th>Canal más usado</th>
-              <th>Mejora más citada</th>
-            </tr>
-          </thead>
-          <tbody id="rankBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="card section third">
-      <div class="title">
-        <h2>Mejoras detectadas</h2>
-        <span>Temas frecuentes</span>
-      </div>
-      <div class="cloud" id="cloud"></div>
-    </div>
-
-    <div class="card section third">
-      <div class="title">
-        <h2>Demografía</h2>
-        <span>Edad</span>
-      </div>
-      <div class="bars" id="ageBars"></div>
-    </div>
-
-    <div class="card section third">
-      <div class="title">
-        <h2>Perfil ciudadano</h2>
-        <span>Sexo registrado</span>
-      </div>
-      <div class="bars" id="sexBars"></div>
-    </div>
-
-    <div class="card section wide">
-      <div class="title">
-        <h2>Lectura ejecutiva automática</h2>
-        <span>Generada con los filtros activos</span>
-      </div>
-      <div class="insights" id="insights"></div>
-    </div>
-
-  </section>
-
-  <div class="footer">
-    Fuente: archivo “Instrumento 2 - Encuesta Ciudadanos.xlsx”, ubicado en la raíz del repositorio junto a index.html.
-  </div>
+    encuesta7.html
+        <div class="numero">7</div>
+        <div class="titulo">Encuesta 7</div>
+        <div class="descripcion">
+            Dashboard interactivo
+        </div>
+    </a>
 
 </div>
 
-<script>
-let rows = [];
+</section>
 
-const EXCEL_URLS = [
-  "./Instrumento%202%20-%20Encuesta%20Ciudadanos.xlsx",
-  "./Instrumento 2 - Encuesta Ciudadanos.xlsx"
-];
-
-const C = {
-  city: "Ciudad de la Sede",
-  sede: "Nombre de la Sede",
-  quality: "¿Cómo califica la calidad de la prestación del servicio ofrecido por la entidad?",
-  gestion: "¿Qué tipo de gestión vino a realizar hoy?",
-  channel: "¿Cuál de los siguientes canales preferiría usar?",
-  wait: "¿Cuánto tiempo aproximadamente tuvo que esperar para ser atendido? Indique el tiempo en minutos",
-  improvePoint: "Teniendo en cuenta la calificación anterior ¿Qué le mejoraría a este punto de servicio?",
-  improveServer: "Teniendo en cuenta la calificación anterior ¿Qué mejoraría a la atención prestada por los servidores?",
-  effective: "¿La entidad le dio respuesta efectiva a su requerimiento?",
-  age: "Edad",
-  sex: "Sexo de nacimiento"
-};
-
-function clean(value){
-  return value == null ? "" : String(value).trim();
-}
-
-function label(value){
-  return clean(value)
-    .replace(/^\d+\.?\s*/, "")
-    .replace(/^Opción\s+\d+:\s*/i, "")
-    .replace(/\s+/g, " ");
-}
-
-function isYes(value){
-  const x = clean(value).toLowerCase();
-  return x === "si" || x === "sí" || x.startsWith("1 si") || x.startsWith("1 sí");
-}
-
-function isDigital(value){
-  const x = label(value).toLowerCase();
-  return x.includes("internet") ||
-         x.includes("web") ||
-         x.includes("virtual") ||
-         x.includes("correo") ||
-         x.includes("whats") ||
-         x.includes("aplicativo") ||
-         x.includes("digital");
-}
-
-function pct(n, d){
-  return d ? Math.round((n * 100) / d) : 0;
-}
-
-function uniq(data, col){
-  return [...new Set(data.map(r => label(r[col])).filter(Boolean))].sort();
-}
-
-function countBy(data, col, limit = 8){
-  const map = {};
-
-  data.forEach(r => {
-    const key = label(r[col]) || "Sin dato";
-    map[key] = (map[key] || 0) + 1;
-  });
-
-  return Object.entries(map)
-    .sort((a,b) => b[1] - a[1])
-    .slice(0, limit);
-}
-
-function fillSelect(id, values, first){
-  const el = document.getElementById(id);
-  const current = el.value;
-
-  el.innerHTML =
-    `<option value="">${first}</option>` +
-    values.map(v => `<option value="${v}">${v}</option>`).join("");
-
-  if(values.includes(current)){
-    el.value = current;
-  }
-}
-
-function filtered(){
-  const city = document.getElementById("fCity").value;
-  const sede = document.getElementById("fSede").value;
-  const age = document.getElementById("fAge").value;
-  const sex = document.getElementById("fSex").value;
-  const query = document.getElementById("q").value.toLowerCase();
-
-  return rows.filter(r => {
-    return (!city || label(r[C.city]) === city) &&
-           (!sede || label(r[C.sede]) === sede) &&
-           (!age || label(r[C.age]) === age) &&
-           (!sex || label(r[C.sex]) === sex) &&
-           (!query || Object.values(r).join(" ").toLowerCase().includes(query));
-  });
-}
-
-function drawBars(id, items, total, cls = ""){
-  const container = document.getElementById(id);
-  const max = Math.max(1, ...items.map(x => x[1]));
-
-  if(!items.length){
-    container.innerHTML = `<div class="empty">Sin datos para este filtro.</div>`;
-    return;
-  }
-
-  container.innerHTML = items.map(([name, value]) => {
-    const width = Math.max(3, (value / max) * 100);
-    return `
-      <div class="bar">
-        <label title="${name}">${name}</label>
-        <div class="track">
-          <div class="fill ${cls}" style="width:${width}%"></div>
-        </div>
-        <div class="val">${value}<small> ${pct(value,total)}%</small></div>
-      </div>
-    `;
-  }).join("");
-}
-
-function render(){
-  const data = filtered();
-  const n = data.length;
-
-  const fav = data.filter(r =>
-    /4|5|bueno|excelente/i.test(clean(r[C.quality]))
-  ).length;
-
-  const effective = data.filter(r => isYes(r[C.effective])).length;
-  const digital = data.filter(r => isDigital(r[C.channel])).length;
-
-  document.getElementById("mTotal").textContent = n;
-  document.getElementById("mCities").textContent = uniq(data, C.city).length;
-  document.getElementById("mEffective").textContent = pct(effective,n) + "%";
-  document.getElementById("mDigital").textContent = pct(digital,n) + "%";
-
-  document.getElementById("favPct").textContent = pct(fav,n) + "%";
-  document.getElementById("ring").style.setProperty("--p", pct(fav,n));
-
-  drawBars("qualityBars", countBy(data, C.quality, 6), n, "green");
-  drawBars("waitBars", countBy(data, C.wait, 6), n, "amber");
-  drawBars("channelBars", countBy(data, C.channel, 6), n, "");
-  drawBars("gestionBars", countBy(data, C.gestion, 6), n, "green");
-  drawBars("ageBars", countBy(data, C.age, 7), n, "");
-  drawBars("sexBars", countBy(data, C.sex, 6), n, "amber");
-
-  renderRanking(data);
-  renderCloud(data);
-  renderInsights(data, fav, effective, digital);
-}
-
-function renderRanking(data){
-  const groups = {};
-
-  data.forEach(r => {
-    const key = (label(r[C.city]) || "Sin ciudad") + "||" + (label(r[C.sede]) || "Sin sede");
-    groups[key] = groups[key] || [];
-    groups[key].push(r);
-  });
-
-  const html = Object.entries(groups)
-    .sort((a,b) => b[1].length - a[1].length)
-    .slice(0,20)
-    .map(([key, group]) => {
-      const [city, sede] = key.split("||");
-      const fav = group.filter(r => /4|5|bueno|excelente/i.test(clean(r[C.quality]))).length;
-      const favPct = pct(fav, group.length);
-      const channel = countBy(group, C.channel, 1)[0]?.[0] || "Sin dato";
-      const improvement = countBy(group, C.improvePoint, 1)[0]?.[0] || "Sin dato";
-
-      return `
-        <tr>
-          <td>${city}</td>
-          <td>${sede}</td>
-          <td>${group.length}</td>
-          <td>${favPct}%</td>
-          <td>${channel}</td>
-          <td>${improvement}</td>
-        </tr>
-      `;
-    }).join("");
-
-  document.getElementById("rankBody").innerHTML = html;
-}
-
-function renderCloud(data){
-  const text = data.map(r =>
-    label(r[C.improvePoint]) + " " + label(r[C.improveServer])
-  ).join(" ").toLowerCase();
-
-  const themes = [
-    "señalización",
-    "espacio",
-    "ventanillas",
-    "distintivos",
-    "lenguaje",
-    "información",
-    "recepción",
-    "infraestructura",
-    "presencial",
-    "internet",
-    "virtual",
-    "teléfono",
-    "nada"
-  ];
-
-  const tags = themes.map(t => {
-    const count = (text.match(new RegExp(t, "g")) || []).length;
-    if(!count) return "";
-    return `<span class="tag ${count > 4 ? "hot" : ""}">${t} · ${count}</span>`;
-  }).join("");
-
-  document.getElementById("cloud").innerHTML =
-    tags || `<div class="empty">No hay mejoras visibles en este filtro.</div>`;
-}
-
-function renderInsights(data, fav, effective, digital){
-  const n = data.length;
-
-  document.getElementById("insights").innerHTML = `
-    <div class="insight">
-      <h3>Favorabilidad</h3>
-      <p>Con el filtro activo, ${pct(fav,n)}% de las respuestas están en Bueno o Excelente. Base analizada: ${n} registros.</p>
-    </div>
-
-    <div class="insight">
-      <h3>Respuesta efectiva</h3>
-      <p>La respuesta efectiva alcanza ${pct(effective,n)}% en la selección actual. Este indicador ayuda a identificar sedes o segmentos con mayor oportunidad de mejora.</p>
-    </div>
-
-    <div class="insight">
-      <h3>Canales</h3>
-      <p>${pct(digital,n)}% de las respuestas filtradas muestran preferencia o mención de canal digital. La lectura sugiere complementar la atención presencial con pedagogía digital.</p>
-    </div>
-  `;
-}
-
-function initDashboard(){
-  fillSelect("fCity", uniq(rows, C.city), "Ciudad: todas");
-  fillSelect("fSede", uniq(rows, C.sede), "Sede: todas");
-  fillSelect("fAge", uniq(rows, C.age), "Edad: todas");
-  fillSelect("fSex", uniq(rows, C.sex), "Sexo: todos");
-
-  render();
-
-  document.getElementById("dot").className = "dot ok";
-  document.getElementById("status").textContent =
-    "Datos cargados automáticamente: " + rows.length + " registros";
-
-  setTimeout(() => {
-    document.getElementById("loadingBox").style.display = "none";
-  }, 1200);
-}
-
-async function loadExcel(){
-  let lastError = "";
-
-  for(const url of EXCEL_URLS){
-    try{
-      const response = await fetch(url + "?v=" + Date.now(), {
-        cache: "no-store"
-      });
-
-      if(!response.ok){
-        lastError = url + " → " + response.status;
-        continue;
-      }
-
-      const buffer = await response.arrayBuffer();
-      const workbook = XLSX.read(buffer, {type:"array"});
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-
-      rows = XLSX.utils.sheet_to_json(sheet, {defval:""});
-
-      initDashboard();
-      return;
-
-    }catch(error){
-      lastError = error.message;
-    }
-  }
-
-  document.getElementById("dot").className = "dot bad";
-  document.getElementById("status").innerHTML =
-    "No se pudo cargar el Excel automáticamente. Verifica que el archivo esté en la raíz del repositorio con este nombre exacto: <b>Instrumento 2 - Encuesta Ciudadanos.xlsx</b>. Detalle: " + lastError;
-}
-
-document.getElementById("fCity").addEventListener("change", render);
-document.getElementById("fSede").addEventListener("change", render);
-document.getElementById("fAge").addEventListener("change", render);
-document.getElementById("fSex").addEventListener("change", render);
-document.getElementById("q").addEventListener("input", render);
-
-window.addEventListener("DOMContentLoaded", loadExcel);
-</script>
+<footer>
+    Centro de Analítica de Encuestas
+</footer>
 
 </body>
 </html>
