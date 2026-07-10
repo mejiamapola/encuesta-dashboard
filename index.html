@@ -2,7 +2,6 @@
 <html lang="es">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -27,66 +26,39 @@
 }
 
 body{
-
     font-family:'Segoe UI',sans-serif;
-
-    background:white;
-
-    min-height:100vh;
-
+    background:#FFFFFF;
     color:var(--texto);
-
 }
 
 .header{
-
     text-align:center;
-
     padding:60px 20px 40px;
-
-    background:white;
-
 }
 
 .header h1{
-
-    font-size:3rem;
+    font-size:3.5rem;
     font-weight:900;
-
-    margin-bottom:15px;
-
     color:var(--azul);
-
 }
 
 .linea{
-
-    width:180px;
+    width:220px;
     height:6px;
-
     background:var(--rojo);
-
     border-radius:999px;
-
-    margin:auto auto 25px auto;
-
+    margin:20px auto;
 }
 
 .header p{
-
-    font-size:1.1rem;
-    color:#5b6b8f;
-
+    color:#6B7CA3;
+    font-size:1.2rem;
 }
 
 .panel{
-
     max-width:1400px;
-
     margin:auto;
-
-    padding:40px;
-
+    padding:20px 40px 60px;
 }
 
 .grid{
@@ -94,7 +66,7 @@ body{
     display:grid;
 
     grid-template-columns:
-    repeat(auto-fit,minmax(250px,1fr));
+    repeat(auto-fit,minmax(280px,1fr));
 
     gap:30px;
 
@@ -102,34 +74,40 @@ body{
 
 .card{
 
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-height:260px;
+
+    padding:30px;
+
     text-decoration:none;
 
     background:white;
 
-    border:1px solid #E2E8F5;
-
     border-radius:30px;
 
-    padding:35px 25px;
-
-    text-align:center;
-
-    transition:.3s;
+    border:1px solid #E4EAF7;
 
     box-shadow:
-    0 10px 25px rgba(0,58,140,.08);
+    0 12px 30px rgba(0,58,140,.08);
 
+    transition:.3s ease;
 }
 
 .card:hover{
 
     transform:translateY(-8px);
 
-    border-color:var(--amarillo);
-
     box-shadow:
-    0 20px 40px rgba(0,58,140,.15);
+    0 25px 40px rgba(0,58,140,.15);
 
+    border-color:var(--amarillo);
 }
 
 .numero{
@@ -137,25 +115,23 @@ body{
     width:90px;
     height:90px;
 
-    margin:auto;
+    border-radius:50%;
 
     display:flex;
     align-items:center;
     justify-content:center;
 
-    border-radius:50%;
-
     background:linear-gradient(
-        135deg,
-        var(--amarillo),
-        #FFC400
+            135deg,
+            #FFE000,
+            #FFC400
     );
 
-    font-size:2.5rem;
+    color:var(--azulOscuro);
+
+    font-size:2.6rem;
 
     font-weight:900;
-
-    color:var(--azulOscuro);
 
 }
 
@@ -163,11 +139,13 @@ body{
 
     margin-top:20px;
 
-    font-size:1.2rem;
+    font-size:1.4rem;
 
     font-weight:800;
 
     color:var(--azul);
+
+    text-align:center;
 
 }
 
@@ -175,45 +153,47 @@ body{
 
     margin-top:12px;
 
-    color:#6D7C9B;
+    text-align:center;
 
-    font-size:.95rem;
+    color:#7382A3;
 
     line-height:1.5;
 
 }
 
-footer{
-
-    margin-top:70px;
-
-    padding:30px;
-
-    text-align:center;
-
-    color:#7A88A3;
-
-    border-top:1px solid #EAEFF8;
-
-}
-
 .badge{
 
-    display:inline-block;
-
-    margin-top:12px;
+    margin-top:18px;
 
     padding:8px 14px;
 
-    border-radius:999px;
+    background:#FFF8D6;
 
-    background:#FFFBE6;
+    border-radius:999px;
 
     color:var(--azul);
 
     font-size:.85rem;
 
     font-weight:700;
+
+}
+
+footer{
+
+    text-align:center;
+
+    padding:35px;
+
+    color:#8694AF;
+
+}
+
+@media(max-width:768px){
+
+    .header h1{
+        font-size:2.4rem;
+    }
 
 }
 
@@ -240,11 +220,17 @@ footer{
 <div class="grid">
 
     encuesta1.html
+
         <div class="numero">1</div>
-        <div class="titulo">Encuesta 1</div>
+
+        <div class="titulo">
+            Encuesta 1
+        </div>
+
         <div class="descripcion">
             Dashboard interactivo
         </div>
+
     </a>
 
     encuesta-ciudadanos.html
@@ -266,43 +252,73 @@ footer{
     </a>
 
     encuesta3.html
+
         <div class="numero">3</div>
-        <div class="titulo">Encuesta 3</div>
+
+        <div class="titulo">
+            Encuesta 3
+        </div>
+
         <div class="descripcion">
             Dashboard interactivo
         </div>
+
     </a>
 
     encuesta4.html
+
         <div class="numero">4</div>
-        <div class="titulo">Encuesta 4</div>
+
+        <div class="titulo">
+            Encuesta 4
+        </div>
+
         <div class="descripcion">
             Dashboard interactivo
         </div>
+
     </a>
 
     encuesta5.html
+
         <div class="numero">5</div>
-        <div class="titulo">Encuesta 5</div>
+
+        <div class="titulo">
+            Encuesta 5
+        </div>
+
         <div class="descripcion">
             Dashboard interactivo
         </div>
+
     </a>
 
     encuesta6.html
+
         <div class="numero">6</div>
-        <div class="titulo">Encuesta 6</div>
+
+        <div class="titulo">
+            Encuesta 6
+        </div>
+
         <div class="descripcion">
             Dashboard interactivo
         </div>
+
     </a>
 
     encuesta7.html
+
         <div class="numero">7</div>
-        <div class="titulo">Encuesta 7</div>
+
+        <div class="titulo">
+            Encuesta 7
+        </div>
+
         <div class="descripcion">
             Dashboard interactivo
         </div>
+
     </a>
 
 </div>
