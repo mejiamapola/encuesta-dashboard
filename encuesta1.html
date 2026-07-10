@@ -1599,8 +1599,10 @@ async function cargarExcel(){
 
     }
 
-    document.getElementById("estadoCarga").innerHTML =
-        "❌ No se pudo cargar el Excel. Verifica que el archivo esté en la raíz del repositorio con este nombre exacto: <strong>Instrumento 1 - Modelo de Relacionamiento y Servicio al Ciudadano(1-44).xlsx</strong>. Detalle: " + ultimoError;
+console.error("ERROR:", ultimoError);
+
+document.getElementById("estadoCarga").innerHTML =
+    "ERROR: " + ultimoError;
 }
 
 cargarExcel();
