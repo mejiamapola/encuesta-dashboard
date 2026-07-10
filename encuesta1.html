@@ -723,15 +723,14 @@ Nivel consolidado de cumplimiento
 </section>
 
 <script>
-
 let datosOriginales = [];
 let datosFiltrados = [];
 let columnasPreguntas = [];
 
 const ARCHIVOS_EXCEL = [
-    "./Instrumento 1 - Modelo de Relacionamiento y Servicio al Ciudadano(1-44).xlsx",
-    "./Instrumento%201%20-%20Modelo%20de%20Relacionamiento%20y%20Servicio%20al%20Ciudadano(1-44).xlsx",
-    "./Instrumento%201%20-%20Modelo%20de%20Relacionamiento%20y%20Servicio%20al%20Ciudadano%281-44%29.xlsx"
+  "./Instrumento%201%20-%20Modelo%20de%20Relacionamiento%20y%20Servicio%20al%20Ciudadano(1-44).xlsx",
+  "./Instrumento%201%20-%20Modelo%20de%20Relacionamiento%20y%20Servicio%20al%20Ciudadano%281-44%29.xlsx",
+  "./Instrumento 1 - Modelo de Relacionamiento y Servicio al Ciudadano(1-44).xlsx"
 ];
 
 const COLUMNA_AREA = "Área de trabajo";
@@ -739,874 +738,870 @@ const COLUMNA_CARGO = "Cargo/Rol";
 const COLUMNA_SERVICIOS = "QUE SERVICIOS SE PRESTAN EN LA DEPENDENCIA QUE USTED LIDERA O APOYA";
 
 const columnasNoEvaluables = [
-    "ID",
-    "Hora de inicio",
-    "Hora de finalización",
-    "Correo electrónico",
-    "Nombre",
-    "Hora de la última modificación",
-    "Área de trabajo",
-    "Cargo/Rol",
-    "QUE SERVICIOS SE PRESTAN EN LA DEPENDENCIA QUE USTED LIDERA O APOYA"
+  "ID",
+  "Hora de inicio",
+  "Hora de finalización",
+  "Correo electrónico",
+  "Nombre",
+  "Hora de la última modificación",
+  "Área de trabajo",
+  "Cargo/Rol",
+  "QUE SERVICIOS SE PRESTAN EN LA DEPENDENCIA QUE USTED LIDERA O APOYA"
 ];
 
 const dimensiones = [
-    {
-        nombre: "Modelo y política",
-        palabras: [
-            "modelo de servicio",
-            "política de servicio",
-            "politica de servicio",
-            "racionalización",
-            "racionalizacion",
-            "procesos y procedimientos",
-            "manual",
-            "protocolos"
-        ]
-    },
-    {
-        nombre: "Gestión y mejora",
-        palabras: [
-            "monitoreo",
-            "seguimiento",
-            "encuestas de satisfacción",
-            "encuestas de satisfaccion",
-            "mejoramiento",
-            "toma de decisiones",
-            "innovación",
-            "innovacion"
-        ]
-    },
-    {
-        nombre: "Accesibilidad e inclusión",
-        palabras: [
-            "braille",
-            "lenguas diversas",
-            "fácil lectura",
-            "facil lectura",
-            "baño público",
-            "bano publico",
-            "discapacidad",
-            "personas ciegas",
-            "sordas",
-            "enfoque diferencial",
-            "ajustes razonables"
-        ]
-    },
-    {
-        nombre: "Canales y trámites",
-        palabras: [
-            "línea gratuita",
-            "linea gratuita",
-            "canal virtual",
-            "página web",
-            "pagina web",
-            "portafolio",
-            "omnicanal",
-            "suit",
-            "pqrs",
-            "pqrsdf",
-            "chat"
-        ]
-    },
-    {
-        nombre: "Talento humano",
-        palabras: [
-            "selección del personal",
-            "seleccion del personal",
-            "competencias",
-            "cualificación",
-            "cualificacion",
-            "incentivos",
-            "comportamiento",
-            "actitud",
-            "recursos asignados"
-        ]
-    },
-    {
-        nombre: "Transparencia y participación",
-        palabras: [
-            "información mínima",
-            "informacion minima",
-            "activos de información",
-            "activos de informacion",
-            "rendición de cuentas",
-            "rendicion de cuentas",
-            "participación ciudadana",
-            "participacion ciudadana",
-            "lenguaje claro"
-        ]
-    }
+  {
+    nombre: "Modelo y política",
+    palabras: [
+      "modelo de servicio",
+      "política de servicio",
+      "politica de servicio",
+      "racionalización",
+      "racionalizacion",
+      "procesos y procedimientos",
+      "manual",
+      "protocolos"
+    ]
+  },
+  {
+    nombre: "Gestión y mejora",
+    palabras: [
+      "monitoreo",
+      "seguimiento",
+      "encuestas de satisfacción",
+      "encuestas de satisfaccion",
+      "mejoramiento",
+      "toma de decisiones",
+      "innovación",
+      "innovacion"
+    ]
+  },
+  {
+    nombre: "Accesibilidad e inclusión",
+    palabras: [
+      "braille",
+      "lenguas diversas",
+      "fácil lectura",
+      "facil lectura",
+      "baño público",
+      "bano publico",
+      "discapacidad",
+      "personas ciegas",
+      "sordas",
+      "enfoque diferencial",
+      "ajustes razonables"
+    ]
+  },
+  {
+    nombre: "Canales y trámites",
+    palabras: [
+      "línea gratuita",
+      "linea gratuita",
+      "canal virtual",
+      "página web",
+      "pagina web",
+      "portafolio",
+      "omnicanal",
+      "suit",
+      "pqrs",
+      "pqrsdf",
+      "chat"
+    ]
+  },
+  {
+    nombre: "Talento humano",
+    palabras: [
+      "selección del personal",
+      "seleccion del personal",
+      "competencias",
+      "cualificación",
+      "cualificacion",
+      "incentivos",
+      "comportamiento",
+      "actitud",
+      "recursos asignados"
+    ]
+  },
+  {
+    nombre: "Transparencia y participación",
+    palabras: [
+      "información mínima",
+      "informacion minima",
+      "activos de información",
+      "activos de informacion",
+      "rendición de cuentas",
+      "rendicion de cuentas",
+      "participación ciudadana",
+      "participacion ciudadana",
+      "lenguaje claro"
+    ]
+  }
 ];
 
 function limpiar(valor){
-    if(valor === null || valor === undefined){
-        return "";
-    }
+  if(valor === null || valor === undefined){
+    return "";
+  }
 
-    return String(valor).trim();
+  return String(valor).trim();
 }
 
 function normalizar(valor){
-    return limpiar(valor)
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase();
+  return limpiar(valor)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
 }
 
 function clasificarRespuesta(valor){
+  const texto = normalizar(valor);
 
-    const texto = normalizar(valor);
+  if(!texto){
+    return "Sin dato";
+  }
 
-    if(!texto){
-        return "Sin dato";
-    }
+  if(
+    texto === "si" ||
+    texto === "sí" ||
+    texto.startsWith("si ") ||
+    texto.startsWith("sí ") ||
+    texto.startsWith("1 si") ||
+    texto.startsWith("1 sí")
+  ){
+    return "Sí";
+  }
 
-    if(
-        texto === "si" ||
-        texto === "sí" ||
-        texto.startsWith("si ") ||
-        texto.startsWith("sí ") ||
-        texto.startsWith("1 si") ||
-        texto.startsWith("1 sí")
-    ){
-        return "Sí";
-    }
+  if(
+    texto === "no" ||
+    texto.startsWith("no ") ||
+    texto.startsWith("2 no")
+  ){
+    return "No";
+  }
 
-    if(
-        texto === "no" ||
-        texto.startsWith("no ") ||
-        texto.startsWith("2 no")
-    ){
-        return "No";
-    }
+  if(
+    texto === "n/a" ||
+    texto === "na" ||
+    texto.includes("no aplica")
+  ){
+    return "N/A";
+  }
 
-    if(
-        texto === "n/a" ||
-        texto === "na" ||
-        texto.includes("no aplica")
-    ){
-        return "N/A";
-    }
+  if(texto.includes("transversal")){
+    return "Transversal";
+  }
 
-    if(texto.includes("transversal")){
-        return "Transversal";
-    }
+  if(texto.includes("verificar")){
+    return "Verificar";
+  }
 
-    if(texto.includes("verificar")){
-        return "Verificar";
-    }
-
-    return "Otro";
+  return "Otro";
 }
 
 function porcentaje(valor, total){
-    if(!total){
-        return 0;
-    }
+  if(!total){
+    return 0;
+  }
 
-    return Math.round((valor * 100) / total);
+  return Math.round((valor * 100) / total);
 }
 
 function etiqueta(valor){
-    return limpiar(valor).replace(/\s+/g, " ");
+  return limpiar(valor).replace(/\s+/g, " ");
 }
 
 function dividirServicios(valor){
-
-    return limpiar(valor)
-        .split(";")
-        .map(item => item.replace(/^\d+\.?\s*/, "").trim())
-        .filter(ite* => item.length > 0);
+  return limpiar(valor)
+    .split(";")
+    .map(item => item.replace(/^\d+\.?\s*/, "").trim())
+    .filter(item => item.length > 0);
 }
 
-function *onteo(lista){
+function conteo(lista){
+  const mapa = {};
 
-    const mapa = {}*
+  lista.forEach(item => {
+    const clave = item || "Sin dato";
+    mapa[clave] = (mapa[clave] || 0) + 1;
+  });
 
-    lista.forEach(item => {
-    *   const clave = item || "Sin dato*;
-        mapa[clave] = (mapa[clave] || 0) + 1;
-    });
-
-    return m*pa;
+  return mapa;
 }
 
-function ordenarTop(mapa, l*mite = 10){
-
-    return Object.ent*ies(mapa)
-        .sort((a,b) => b*1] - a[1])
-        .slice(0, limit*);
+function ordenarTop(mapa, limite = 10){
+  return Object.entries(mapa)
+    .sort((a,b) => b[1] - a[1])
+    .slice(0, limite);
 }
 
-function valoresUnicos(data,*columna){
-
-    return [
-        ...new Set(
-            data
-                .map(fila => etiqueta(fila[columna]))
-                .filter(*alor => valor.length > 0)
-        *
-    ].sort();
+function valoresUnicos(data, columna){
+  return [
+    ...new Set(
+      data
+        .map(fila => etiqueta(fila[columna]))
+        .filter(valor => valor.length > 0)
+    )
+  ].sort();
 }
 
-function llenarS*lect(id, valores, textoInicial){
+function llenarSelect(id, valores, textoInicial){
+  const select = document.getElementById(id);
 
-*   const select = document.getElem*ntById(id);
-    const valorActual * select.value;
+  if(!select){
+    return;
+  }
 
-    let html = `<o*tion value="">${textoInicial}</opt*on>`;
+  const valorActual = select.value;
 
-    valores.forEach(valor =* {
-        const seguro = valor.re*lace(/"/g, "&quot;");
-        html*+= `<option value="${seguro}">${va*or}</option>`;
-    });
+  let html = `<option value="">${textoInicial}</option>`;
 
-    select*innerHTML = html;
+  valores.forEach(valor => {
+    const seguro = String(valor).replace(/"/g, "&quot;");
+    html += `<option value="${seguro}">${valor}</option>`;
+  });
 
-    if(valores.*ncludes(valorActual)){
-        sel*ct.value = valorActual;
-    }
+  select.innerHTML = html;
+
+  if(valores.includes(valorActual)){
+    select.value = valorActual;
+  }
 }
 
-f*nction detectarColumnasPreguntas(d*ta){
+function detectarColumnasPreguntas(data){
+  if(!data.length){
+    return [];
+  }
 
-    if(!data.length){
-      * return [];
-    }
+  const columnas = Object.keys(data[0]);
 
-    const colum*as = Object.keys(data[0]);
+  return columnas.filter(columna => {
+    const colNorm = normalizar(columna);
 
-    re*urn columnas.filter(columna => {
-
-*       const colNorm = normalizar(*olumna);
-
-        if(columnasNoEva*uables.includes(columna)){
-       *    return false;
-        }
-
-     *  if(colNorm.includes("observacion*s")){
-            return false;
-  *     }
-
-        if(colNorm.include*("descripción")){
-            retu*n false;
-        }
-
-        if(col*orm.includes("descripcion")){
-    *       return false;
-        }
-
-  *     return true;
-    });
-}
-
-funct*on aplicarFiltros(){
-
-    const de*endencia = document.getElementById*"filtroDependencia").value;
-    co*st cargo = document.getElementById*"filtroCargo").value;
-    const se*vicio = document.getElementById("f*ltroServicio").value;
-    const bu*queda = document.getElementById("t*xtoBusqueda").value.toLowerCase();*
-    datosFiltrados = datosOrigina*es.filter(fila => {
-
-        const*serviciosFila = dividirServicios(f*la[COLUMNA_SERVICIOS]);
-
-        c*nst cumpleDependencia =
-          * !dependencia ||
-            etiqu*ta(fila[COLUMNA_AREA]) === depende*cia;
-
-        const cumpleCargo =
-*           !cargo ||
-            e*iqueta(fila[COLUMNA_CARGO]) === ca*go;
-
-        const cumpleServicio *
-            !servicio ||
-        *   serviciosFila.includes(servicio*;
-
-        const cumpleBusqueda =
-*           !busqueda ||
-          * Object.values(fila).join(" ").toL*werCase().includes(busqueda);
-
-   *    return cumpleDependencia &&
-  *            cumpleCargo &&
-       *       cumpleServicio &&
-         *     cumpleBusqueda;
-    });
-
-    *ctualizarDashboard();
-}
-
-function *stadisticasRespuestas(data){
-
-    *onst stats = {
-        "Sí":0,
-   *    "No":0,
-        "N/A":0,
-     *  "Transversal":0,
-        "Verifi*ar":0,
-        "Otro":0,
-        "*in dato":0
-    };
-
-    let total =*0;
-
-    columnasPreguntas.forEach(*olumna => {
-
-        data.forEach(*ila => {
-
-            const tipo =*clasificarRespuesta(fila[columna])*
-
-            stats[tipo] = (stats*tipo] || 0) + 1;
-            total*+;
-
-        });
-
-    });
-
-    retu*n {
-        stats,
-        total
- *  };
-}
-
-function calcularMadurezPo*Dimension(data){
-
-    return dimen*iones.map(dimension => {
-
-        *onst columnasDimension = columnasP*eguntas.filter(columna => {
-
-     *      const nombreColumna = normal*zar(columna);
-
-            return *imension.palabras.some(palabra =>
-*               nombreColumna.inclu*es(normalizar(palabra))
-          * );
-
-        });
-
-        let si =*0;
-        let no = 0;
-        let*na = 0;
-        let total = 0;
-
-  *     columnasDimension.forEach(col*mna => {
-
-            data.forEach*fila => {
-
-                const t*po = clasificarRespuesta(fila[columna]);
-
-                if(["Sí","No","N/A","Transversal","Verificar"]*includes(tipo)){
-                 *  total++;
-
-                    if*tipo === "Sí"){
-                  *     si++;
-                    }
-
-*                   if(tipo === "No*){
-                        no++;
- *                  }
-
-             *      if(tipo === "N/A"){
-        *               na++;
-             *      }
-                }
-
-       *    });
-
-        });
-
-        retu*n {
-            nombre: dimension.*ombre,
-            si,
-           *no,
-            na,
-            to*al,
-            cumplimiento: porc*ntaje(si,total)
-        };
-
-    })*
-
-}
-
-function dibujarBarras(id, it*ms, total, clase = ""){
-
-    const*contenedor = document.getElementBy*d(id);
-
-    if(!items.length){
-   *    contenedor.innerHTML = `
-     *      <div style="color:#6D7C9B;">*                Sin datos para est* filtro.
-            </div>
-      * `;
-        return;
+    if(columnasNoEvaluables.includes(columna)){
+      return false;
     }
 
-    con*t maximo = Math.max(...items.map(i*em => item[1]), 1);
+    if(colNorm.includes("observaciones")){
+      return false;
+    }
 
-    contenedo*.innerHTML = items.map(item => {
+    if(colNorm.includes("observacion")){
+      return false;
+    }
 
-*       const nombre = item[0];
-   *    const valor = item[1];
-       *const ancho = Math.max(4, (valor /*maximo) * 100);
-        const pct * porcentaje(valor,total);
+    if(colNorm.includes("descripcion")){
+      return false;
+    }
 
-       *return `
-            <div class="b*r">
+    if(colNorm.includes("descripción")){
+      return false;
+    }
 
-                <div class="b*r-label">
-                    <spa*>${nombre}</span>
-                *   <strong>${valor} · ${pct}%</str*ng>
-                </div>
+    if(colNorm.startsWith("realice una breve")){
+      return false;
+    }
 
-      *         <div class="bar-track">
- *                  <div class="bar-*ill ${clase}" style="width:${ancho*%"></div>
-                </div>
-
-*           </div>
-        `;
-
-    *).join("");
+    return true;
+  });
 }
 
-function pintarCump*imientoGeneral(data){
+function aplicarFiltros(){
+  const dependencia = document.getElementById("filtroDependencia")?.value || "";
+  const cargo = document.getElementById("filtroCargo")?.value || "";
+  const servicio = document.getElementById("filtroServicio")?.value || "";
+  const busqueda = (document.getElementById("textoBusqueda")?.value || "").toLowerCase();
 
-    const r*sultado = estadisticasRespuestas(d*ta);
-    const stats = resultado.s*ats;
-    const total = resultado.t*tal;
+  datosFiltrados = datosOriginales.filter(fila => {
+    const serviciosFila = dividirServicios(fila[COLUMNA_SERVICIOS]);
 
-    const items = [
-        ["Sí", stats["Sí"] || 0],
-        ["No", stats["No"] || 0],
-        ["N/A", stats["N/A"] || 0],
-        ["Transversal", stats["Transversal"] || 0],
-        ["Verificar", stats["Verificar"] || 0],
-        ["Otro", stats["Otro"] || 0]
-    ];
+    const cumpleDependencia =
+      !dependencia ||
+      etiqueta(fila[COLUMNA_AREA]) === dependencia;
 
-    *ibujarBarras("graficoCumplimiento"* items, total);
+    const cumpleCargo =
+      !cargo ||
+      etiqueta(fila[COLUMNA_CARGO]) === cargo;
+
+    const cumpleServicio =
+      !servicio ||
+      serviciosFila.includes(servicio);
+
+    const cumpleBusqueda =
+      !busqueda ||
+      Object.values(fila).join(" ").toLowerCase().includes(busqueda);
+
+    return cumpleDependencia &&
+           cumpleCargo &&
+           cumpleServicio &&
+           cumpleBusqueda;
+  });
+
+  actualizarDashboard();
 }
 
-function pintar*adarMadurez(data){
+function estadisticasRespuestas(data){
+  const stats = {
+    "Sí":0,
+    "No":0,
+    "N/A":0,
+    "Transversal":0,
+    "Verificar":0,
+    "Otro":0,
+    "Sin dato":0
+  };
 
-    const dime*sionesCalculadas = calcularMadurez*orDimension(data);
+  let total = 0;
 
-    const html*= dimensionesCalculadas.map(item =* {
-
-        let color = "#D81E05";*
-        if(item.cumplimiento >= 7*){
-            color = "#0E9F6E";
-*       }else if(item.cumplimiento *= 45){
-            color = "#FFC40*";
-        }
-
-        return `
-   *        <div class="bar">
-
-       *        <div class="bar-label">
-  *                 <span>${item.nomb*e}</span>
-                    <str*ng>${item.cumplimiento}%</strong>
-*               </div>
-
-           *    <div class="bar-track">
-      *             <div
-                *       class="bar-fill"
-          *             style="
-             *              width:${item.cumplim*ento}%;
-                          * background:${color};
-            *           "
-                    >*/div>
-                </div>
-
-    *       </div>
-        `;
-
-    }).j*in("");
-
-    document.getElementBy*d("radarMadurez").innerHTML = html*
-}
-
-function pintarRankingServicio*(data){
-
-    const servicios = [];*
+  columnasPreguntas.forEach(columna => {
     data.forEach(fila => {
-      * dividirServicios(fila[COLUMNA_SERVICIOS]).forEach(servicio => {
-    *       servicios.push(servicio);
- *      });
+      const tipo = clasificarRespuesta(fila[columna]);
+      stats[tipo] = (stats[tipo] || 0) + 1;
+      total++;
+    });
+  });
+
+  return { stats, total };
+}
+
+function calcularMadurezPorDimension(data){
+  return dimensiones.map(dimension => {
+    const columnasDimension = columnasPreguntas.filter(columna => {
+      const nombreColumna = normalizar(columna);
+
+      return dimension.palabras.some(palabra =>
+        nombreColumna.includes(normalizar(palabra))
+      );
     });
 
-    const mapa * conteo(servicios);
-    const top * ordenarTop(mapa,10);
+    let si = 0;
+    let no = 0;
+    let na = 0;
+    let total = 0;
 
-    dibujarBarras("rankingServicios", top, data.length);
+    columnasDimension.forEach(columna => {
+      data.forEach(fila => {
+        const tipo = clasificarRespuesta(fila[columna]);
+
+        if(["Sí","No","N/A","Transversal","Verificar"].includes(tipo)){
+          total++;
+
+          if(tipo === "Sí"){
+            si++;
+          }
+
+          if(tipo === "No"){
+            no++;
+          }
+
+          if(tipo === "N/A"){
+            na++;
+          }
+        }
+      });
+    });
+
+    return {
+      nombre: dimension.nombre,
+      si,
+      no,
+      na,
+      total,
+      cumplimiento: porcentaje(si,total)
+    };
+  });
+}
+
+function dibujarBarras(id, items, total, clase = ""){
+  const contenedor = document.getElementById(id);
+
+  if(!contenedor){
+    return;
+  }
+
+  if(!items.length){
+    contenedor.innerHTML = `
+      <div style="color:#6D7C9B;">
+        Sin datos para este filtro.
+      </div>
+    `;
+    return;
+  }
+
+  const maximo = Math.max(...items.map(item => item[1]), 1);
+
+  contenedor.innerHTML = items.map(item => {
+    const nombre = item[0];
+    const valor = item[1];
+    const ancho = Math.max(4, (valor / maximo) * 100);
+    const pct = porcentaje(valor,total);
+
+    return `
+      <div class="bar">
+        <div class="bar-label">
+          <span>${nombre}</span>
+          <strong>${valor} · ${pct}%</strong>
+        </div>
+
+        <div class="bar-track">
+          <div class="bar-fill ${clase}" style="width:${ancho}%"></div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function pintarCumplimientoGeneral(data){
+  const resultado = estadisticasRespuestas(data);
+  const stats = resultado.stats;
+  const total = resultado.total;
+
+  const items = [
+    ["Sí", stats["Sí"] || 0],
+    ["No", stats["No"] || 0],
+    ["N/A", stats["N/A"] || 0],
+    ["Transversal", stats["Transversal"] || 0],
+    ["Verificar", stats["Verificar"] || 0],
+    ["Otro", stats["Otro"] || 0]
+  ];
+
+  dibujarBarras("graficoCumplimiento", items, total);
+}
+
+function pintarRadarMadurez(data){
+  const dimensionesCalculadas = calcularMadurezPorDimension(data);
+
+  const html = dimensionesCalculadas.map(item => {
+    let color = "#D81E05";
+
+    if(item.cumplimiento >= 70){
+      color = "#0E9F6E";
+    }else if(item.cumplimiento >= 45){
+      color = "#FFC400";
+    }
+
+    return `
+      <div class="bar">
+        <div class="bar-label">
+          <span>${item.nombre}</span>
+          <strong>${item.cumplimiento}%</strong>
+        </div>
+
+        <div class="bar-track">
+          <div
+            class="bar-fill"
+            style="
+              width:${item.cumplimiento}%;
+              background:${color};
+            "
+          ></div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  const radar = document.getElementById("radarMadurez");
+
+  if(radar){
+    radar.innerHTML = html;
+  }
+}
+
+function pintarRankingServicios(data){
+  const servicios = [];
+
+  data.forEach(fila => {
+    dividirServicios(fila[COLUMNA_SERVICIOS]).forEach(servicio => {
+      servicios.push(servicio);
+    });
+  });
+
+  const mapa = conteo(servicios);
+  const top = ordenarTop(mapa,10);
+
+  dibujarBarras("rankingServicios", top, data.length);
 }
 
 function pintarRankingDependencias(data){
+  const areas = data.map(fila => etiqueta(fila[COLUMNA_AREA]) || "Sin dato");
+  const mapa = conteo(areas);
+  const top = ordenarTop(mapa,10);
 
-    const areas = data.map(fila => etiqueta(fila[COLUMNA_AREA]) || "Sin dato");
-    const mapa = conteo(areas);
-    const top = ordenarTop(mapa,10);
-
-    dibujarBarras("rankingDependencias", top, data.length);
+  dibujarBarras("rankingDependencias", top, data.length);
 }
 
 function pintarSemaforoMadurez(data){
+  const dimensionesCalculadas = calcularMadurezPorDimension(data);
 
-    const dimensionesCalculadas = calcularMadurezPorDimension(data);
+  const html = dimensionesCalculadas.map(item => {
+    let estado = "Crítico";
+    let color = "#D81E05";
 
-    const html = dimensionesCalculadas.map(item => {
+    if(item.cumplimiento >= 70){
+      estado = "Adecuado";
+      color = "#0E9F6E";
+    }else if(item.cumplimiento >= 45){
+      estado = "Intermedio";
+      color = "#FFC400";
+    }
 
-        let estado = "Crítico";
-        let color = "#D81E05";
+    return `
+      <div
+        style="
+          display:grid;
+          grid-template-columns:2fr 1fr 1fr;
+          gap:15px;
+          align-items:center;
+          padding:14px 0;
+          border-bottom:1px solid #EDF1F9;
+        "
+      >
+        <div style="font-weight:800;color:#003A8C;">
+          ${item.nombre}
+        </div>
 
-        if(item.cumplimiento >= 70){
-            estado = "Adecuado";
-            color = "#0E9F6E";
-        }else if(item.cumplimiento >= 45){
-            estado = "Intermedio";
-            color = "#FFC400";
-        }
+        <div style="font-weight:900;color:${color};">
+          ${item.cumplimiento}%
+        </div>
 
-        return `
-            <div
-                style="
-                    display:grid;
-                    grid-template-columns:2fr 1fr 1fr;
-                    gap:15px;
-                    align-items:center;
-                    padding:14px 0;
-                    border-bottom:1px solid #EDF1F9;
-                "
-            >
+        <div
+          style="
+            display:inline-block;
+            padding:8px 14px;
+            border-radius:999px;
+            background:${color}22;
+            color:${color};
+            font-weight:800;
+            text-align:center;
+          "
+        >
+          ${estado}
+        </div>
+      </div>
+    `;
+  }).join("");
 
-                <div style="font-weight:800;color:#003A8C;">
-                    ${item.nombre}
-                </div>
+  const semaforo = document.getElementById("semaforoMadurez");
 
-                <div style="font-weight:900;color:${color};">
-                    ${item.cumplimiento}%
-                </div>
-
-                <div
-                    style="
-                        display:inline-block;
-                        padding:8px 14px;
-                        border-radius:999px;
-                        background:${color}22;
-                        color:${color};
-                        font-weight:800;
-                        text-align:center;
-                    "
-                >
-                    ${estado}
-                </div>
-
-            </div>
-        `;
-
-    }).join("");
-
-    document.getElementById("semaforoMadurez").innerHTML = html;
+  if(semaforo){
+    semaforo.innerHTML = html;
+  }
 }
 
 function pintarTablaRiesgos(data){
+  const tabla = document.getElementById("tablaRiesgos");
 
-    const riesgos = columnasPreguntas.map(columna => {
+  if(!tabla){
+    return;
+  }
 
-        let si = 0;
-        let no = 0;
-        let total = 0;
+  const riesgos = columnasPreguntas.map(columna => {
+    let si = 0;
+    let no = 0;
+    let total = 0;
 
-        data.forEach(fila => {
+    data.forEach(fila => {
+      const tipo = clasificarRespuesta(fila[columna]);
 
-            const tipo = clasificarRespuesta(fila[columna]);
+      if(tipo === "Sí" || tipo === "No"){
+        total++;
 
-            if(tipo === "Sí" || tipo === "No"){
-                total++;
+        if(tipo === "Sí"){
+          si++;
+        }
 
-                if(tipo === "Sí"){
-                    si++;
-                }
+        if(tipo === "No"){
+          no++;
+        }
+      }
+    });
 
-                if(tipo === "No"){
-                    no++;
-                }
-            }
+    return {
+      columna,
+      si,
+      no,
+      total,
+      cumplimiento: porcentaje(si,total),
+      brecha: porcentaje(no,total)
+    };
+  })
+  .filter(item => item.total > 0)
+  .sort((a,b) => b.brecha - a.brecha)
+  .slice(0,15);
 
-        });
-
-        return {
-            columna,
-            si,
-            no,
-            total,
-            cumplimiento: porcentaje(si,total),
-            brecha: porcentaje(no,total)
-        };
-
-    })
-    .filter(item => item.total > 0)
-    .sort((a,b) => b.brecha - a.brecha)
-    .slice(0,15);
-
-    const html = riesgos.map(item => {
-
-        return `
-            <tr>
-
-                <td>
-                    ${item.columna}
-                </td>
-
-                <td>
-                    ${item.si}
-                </td>
-
-                <td>
-                    ${item.no}
-                </td>
-
-                <td>
-                    ${item.cumplimiento}%
-                </td>
-
-            </tr>
-        `;
-
-    }).join("");
-
-    document.getElementById("tablaRiesgos").innerHTML = html;
+  tabla.innerHTML = riesgos.map(item => `
+    <tr>
+      <td>${item.columna}</td>
+      <td>${item.si}</td>
+      <td>${item.no}</td>
+      <td>${item.cumplimiento}%</td>
+    </tr>
+  `).join("");
 }
 
 function pintarObservaciones(data){
+  const contenedor = document.getElementById("observaciones");
 
-    const comentarios = [];
+  if(!contenedor){
+    return;
+  }
 
-    data.forEach(fila => {
+  const comentarios = [];
 
-        Object.entries(fila).forEach(([columna, valor]) => {
+  data.forEach(fila => {
+    Object.entries(fila).forEach(([columna, valor]) => {
+      const col = normalizar(columna);
 
-            const col = normalizar(columna);
+      if(
+        col.includes("observaciones") ||
+        col.includes("observacion") ||
+        col.includes("descripcion") ||
+        col.includes("descripción") ||
+        col.startsWith("realice una breve")
+      ){
+        const texto = limpiar(valor);
 
-            if(
-                col.includes("observaciones") ||
-                col.includes("descripcion") ||
-                col.includes("descripción")
-            ){
-                const texto = limpiar(valor);
-
-                if(texto.length > 20){
-                    comentarios.push(texto);
-                }
-            }
-
-        });
-
+        if(texto.length > 20){
+          comentarios.push(texto);
+        }
+      }
     });
+  });
 
-    const seleccion = comentarios.slice(0,10);
+  const seleccion = comentarios.slice(0,10);
 
-    if(!seleccion.length){
-        document.getElementById("observaciones").innerHTML =
-        "<p style='color:#6D7C9B;'>No hay observaciones disponibles para este filtro.</p>";
-        return;
-    }
+  if(!seleccion.length){
+    contenedor.innerHTML =
+      "<p style='color:#6D7C9B;'>No hay observaciones disponibles para este filtro.</p>";
+    return;
+  }
 
-    document.getElementById("observaciones").innerHTML = seleccion.map(texto => `
-        <div
-            style="
-                padding:16px;
-                border:1px solid #E4EAF7;
-                border-radius:18px;
-                margin-bottom:12px;
-                color:#4D5F80;
-                line-height:1.5;
-                background:#FFFFFF;
-            "
-        >
-            ${texto}
-        </div>
-    `).join("");
+  contenedor.innerHTML = seleccion.map(texto => `
+    <div
+      style="
+        padding:16px;
+        border:1px solid #E4EAF7;
+        border-radius:18px;
+        margin-bottom:12px;
+        color:#4D5F80;
+        line-height:1.5;
+        background:#FFFFFF;
+      "
+    >
+      ${texto}
+    </div>
+  `).join("");
 }
 
 function pintarInsights(data){
+  const resultado = estadisticasRespuestas(data);
+  const stats = resultado.stats;
+  const total = resultado.total;
 
-    const resultado = estadisticasRespuestas(data);
-    const stats = resultado.stats;
-    const total = resultado.total;
+  const si = stats["Sí"] || 0;
+  const no = stats["No"] || 0;
+  const na = stats["N/A"] || 0;
 
-    const si = stats["Sí"] || 0;
-    const no = stats["No"] || 0;
-    const na = stats["N/A"] || 0;
+  const pctSi = porcentaje(si,total);
+  const pctNo = porcentaje(no,total);
 
-    const pctSi = porcentaje(si,total);
-    const pctNo = porcentaje(no,total);
+  const insight1 = document.getElementById("insight1");
+  const insight2 = document.getElementById("insight2");
+  const insight3 = document.getElementById("insight3");
 
-    document.getElementById("insight1").innerHTML = `
-        <p style="color:#6D7C9B;line-height:1.6;">
-            Con el filtro activo, el nivel de cumplimiento positivo es de
-            <strong>${pctSi}%</strong>, calculado sobre las respuestas evaluables.
-        </p>
+  if(insight1){
+    insight1.innerHTML = `
+      <p style="color:#6D7C9B;line-height:1.6;">
+        Con el filtro activo, el nivel de cumplimiento positivo es de
+        <strong>${pctSi}%</strong>, calculado sobre las respuestas evaluables.
+      </p>
     `;
+  }
 
-    document.getElementById("insight2").innerHTML = `
-        <p style="color:#6D7C9B;line-height:1.6;">
-            El porcentaje de brechas identificadas es de
-            <strong>${pctNo}%</strong>. Este valor permite priorizar los componentes
-            donde se requiere mayor intervención institucional.
-        </p>
+  if(insight2){
+    insight2.innerHTML = `
+      <p style="color:#6D7C9B;line-height:1.6;">
+        El porcentaje de brechas identificadas es de
+        <strong>${pctNo}%</strong>. Este valor permite priorizar los componentes
+        donde se requiere mayor intervención institucional.
+      </p>
     `;
+  }
 
-    document.getElementById("insight3").innerHTML = `
-        <p style="color:#6D7C9B;line-height:1.6;">
-            Se registran <strong>${na}</strong> respuestas clasificadas como N/A,
-            útiles para diferenciar componentes centralizados o no aplicables
-            al contexto territorial.
-        </p>
+  if(insight3){
+    insight3.innerHTML = `
+      <p style="color:#6D7C9B;line-height:1.6;">
+        Se registran <strong>${na}</strong> respuestas clasificadas como N/A,
+        útiles para diferenciar componentes centralizados o no aplicables
+        al contexto territorial.
+      </p>
     `;
+  }
 }
 
 function actualizarKPIs(data){
+  const resultado = estadisticasRespuestas(data);
+  const stats = resultado.stats;
+  const total = resultado.total;
 
-    const resultado = estadisticasRespuestas(data);
-    const stats = resultado.stats;
-    const total = resultado.total;
+  const si = stats["Sí"] || 0;
+  const no = stats["No"] || 0;
 
-    const si = stats["Sí"] || 0;
-    const no = stats["No"] || 0;
+  const pctSi = porcentaje(si,total);
+  const pctNo = porcentaje(no,total);
 
-    const pctSi = porcentaje(si,total);
-    const pctNo = porcentaje(no,total);
+  const totalRespuestas = document.getElementById("totalRespuestas");
+  const totalAreas = document.getElementById("totalAreas");
+  const porcentajeSi = document.getElementById("porcentajeSi");
+  const porcentajeNo = document.getElementById("porcentajeNo");
+  const porcentajeGeneral = document.getElementById("porcentajeGeneral");
 
-    document.getElementById("totalRespuestas").textContent = data.length;
+  if(totalRespuestas){
+    totalRespuestas.textContent = data.length;
+  }
 
-    document.getElementById("totalAreas").textContent =
-        valoresUnicos(data,COLUMNA_AREA).length;
+  if(totalAreas){
+    totalAreas.textContent = valoresUnicos(data,COLUMNA_AREA).length;
+  }
 
-    document.getElementById("porcentajeSi").textContent = pctSi + "%";
-    document.getElementById("porcentajeNo").textContent = pctNo + "%";
+  if(porcentajeSi){
+    porcentajeSi.textContent = pctSi + "%";
+  }
 
-    document.getElementById("porcentajeGeneral").textContent = pctSi + "%";
+  if(porcentajeNo){
+    porcentajeNo.textContent = pctNo + "%";
+  }
 
+  if(porcentajeGeneral){
+    porcentajeGeneral.textContent = pctSi + "%";
+  }
+
+  const circle = document.querySelector(".circle");
+
+  if(circle){
     const grados = Math.round((pctSi / 100) * 360);
 
-    document.querySelector(".circle").style.background =
-    `conic-gradient(#FFE000 0deg, #FFE000 ${grados}deg, #E7EEF8 ${grados}deg)`;
+    circle.style.background =
+      `conic-gradient(#FFE000 0deg, #FFE000 ${grados}deg, #E7EEF8 ${grados}deg)`;
+  }
 }
 
 function actualizarDashboard(){
+  const data = datosFiltrados;
 
-    const data = datosFiltrados;
-
-    actualizarKPIs(data);
-    pintarCumplimientoGeneral(data);
-    pintarRadarMadurez(data);
-    pintarRankingServicios(data);
-    pintarRankingDependencias(data);
-    pintarSemaforoMadurez(data);
-    pintarTablaRiesgos(data);
-    pintarObservaciones(data);
-    pintarInsights(data);
+  actualizarKPIs(data);
+  pintarCumplimientoGeneral(data);
+  pintarRadarMadurez(data);
+  pintarRankingServicios(data);
+  pintarRankingDependencias(data);
+  pintarSemaforoMadurez(data);
+  pintarTablaRiesgos(data);
+  pintarObservaciones(data);
+  pintarInsights(data);
 }
 
 function inicializarFiltros(){
+  llenarSelect(
+    "filtroDependencia",
+    valoresUnicos(datosOriginales,COLUMNA_AREA),
+    "Todas las dependencias"
+  );
 
-    llenarSelect(
-        "filtroDependencia",
-        valoresUnicos(datosOriginales,COLUMNA_AREA),
-        "Todas las dependencias"
-    );
+  llenarSelect(
+    "filtroCargo",
+    valoresUnicos(datosOriginales,COLUMNA_CARGO),
+    "Todos los cargos"
+  );
 
-    llenarSelect(
-        "filtroCargo",
-        valoresUnicos(datosOriginales,COLUMNA_CARGO),
-        "Todos los cargos"
-    );
+  const servicios = [];
 
-    const servicios = [];
-
-    datosOriginales.forEach(fila => {
-        dividirServicios(fila[COLUMNA_SERVICIOS]).forEach(servicio => {
-            servicios.push(servicio);
-        });
+  datosOriginales.forEach(fila => {
+    dividirServicios(fila[COLUMNA_SERVICIOS]).forEach(servicio => {
+      servicios.push(servicio);
     });
+  });
 
-    llenarSelect(
-        "filtroServicio",
-        [...new Set(servicios)].sort(),
-        "Todos los servicios"
-    );
+  llenarSelect(
+    "filtroServicio",
+    [...new Set(servicios)].sort(),
+    "Todos los servicios"
+  );
 
-    document.getElementById("filtroDependencia")
-        .addEventListener("change", aplicarFiltros);
-
-    document.getElementById("filtroCargo")
-        .addEventListener("change", aplicarFiltros);
-
-    document.getElementById("filtroServicio")
-        .addEventListener("change", aplicarFiltros);
-
-    document.getElementById("textoBusqueda")
-        .addEventListener("input", aplicarFiltros);
+  document.getElementById("filtroDependencia")?.addEventListener("change", aplicarFiltros);
+  document.getElementById("filtroCargo")?.addEventListener("change", aplicarFiltros);
+  document.getElementById("filtroServicio")?.addEventListener("change", aplicarFiltros);
+  document.getElementById("textoBusqueda")?.addEventListener("input", aplicarFiltros);
 }
 
 async function cargarExcel(){
+  const estado = document.getElementById("estadoCarga");
 
-    let ultimoError = "";
+  if(estado){
+    estado.innerHTML = "Cargando datos...";
+  }
 
-    for(const archivo of ARCHIVOS_EXCEL){
-
-        try{
-
-            const respuesta = await fetch(
-                archivo + "?v=" + Date.now(),
-                {
-                    cache:"no-store"
-                }
-            );
-
-            if(!respuesta.ok){
-                ultimoError = archivo + " - " + respuesta.status;
-                continue;
-            }
-
-            const buffer = await respuesta.arrayBuffer();
-
-            const libro = XLSX.read(buffer,{
-                type:"array"
-            });
-
-            const hoja = libro.Sheets[libro.SheetNames[0]];
-
-            datosOriginales = XLSX.utils.sheet_to_json(hoja,{
-                defval:""
-            });
-
-            columnasPreguntas = detectarColumnasPreguntas(datosOriginales);
-
-            datosFiltrados = [...datosOriginales];
-
-            inicializarFiltros();
-            actualizarDashboard();
-
-            document.getElementById("estadoCarga").innerHTML =
-                "✅ Datos cargados automáticamente: " +
-                datosOriginales.length +
-                " registros";
-
-            return;
-
-        }catch(error){
-            ultimoError = error.message;
-        }
-
+  if(typeof XLSX === "undefined"){
+    if(estado){
+      estado.innerHTML =
+        "ERROR: La librería XLSX no cargó. Revisa la etiqueta script del CDN.";
     }
+    return;
+  }
 
-console.error("ERROR:", ultimoError);
+  let ultimoError = "";
 
-document.getElementById("estadoCarga").innerHTML =
-    "ERROR: " + ultimoError;
+  for(const archivo of ARCHIVOS_EXCEL){
+    try{
+      const respuesta = await fetch(
+        archivo + "?v=" + Date.now(),
+        { cache:"no-store" }
+      );
+
+      if(!respuesta.ok){
+        ultimoError = archivo + " - HTTP " + respuesta.status;
+        continue;
+      }
+
+      const buffer = await respuesta.arrayBuffer();
+
+      const libro = XLSX.read(buffer,{
+        type:"array"
+      });
+
+      const hoja = libro.Sheets[libro.SheetNames[0]];
+
+      datosOriginales = XLSX.utils.sheet_to_json(hoja,{
+        defval:""
+      });
+
+      columnasPreguntas = detectarColumnasPreguntas(datosOriginales);
+
+      datosFiltrados = [...datosOriginales];
+
+      inicializarFiltros();
+      actualizarDashboard();
+
+      if(estado){
+        estado.innerHTML =
+          "Datos cargados automáticamente: " +
+          datosOriginales.length +
+          " registros";
+      }
+
+      return;
+
+    }catch(error){
+      ultimoError = error.message;
+    }
+  }
+
+  if(estado){
+    estado.innerHTML =
+      "ERROR CARGANDO EXCEL: " + ultimoError;
+  }
 }
 
-cargarExcel();
-
+window.addEventListener("DOMContentLoaded", cargarExcel);
+    
 </script>
 
 </div>
