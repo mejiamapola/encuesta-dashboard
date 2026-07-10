@@ -641,16 +641,20 @@ Resultado consolidado de la encuesta
 </section>
 
 <script>
-
 let datosOriginales = [];
 let datosFiltrados = [];
 
+const EXCEL_FILE_NAME = "Instrumento 2 - Encuesta Ciudadanos(1-116).xlsx";
+
 const ARCHIVOS_EXCEL = [
+    "./" + encodeURIComponent(EXCEL_FILE_NAME),
     "./Instrumento%202%20-%20Encuesta%20Ciudadanos(1-116).xlsx",
     "./Instrumento%202%20-%20Encuesta%20Ciudadanos%281-116%29.xlsx",
     "./Instrumento 2 - Encuesta Ciudadanos(1-116).xlsx",
     "./Instrumento%202%20-%20Encuesta%20Ciudadanos.xlsx",
-    "./Instrumento 2 - Encuesta Ciudadanos.xlsx"
+    "./Instrumento 2 - Encuesta Ciudadanos.xlsx",
+    "https://raw.githubusercontent.com/mejiamapola/encuesta-dashboard/main/" + encodeURIComponent(EXCEL_FILE_NAME),
+    "https://raw.githubusercontent.com/mejiamapola/encuesta-dashboard/master/" + encodeURIComponent(EXCEL_FILE_NAME)
 ];
 
 const C = {
@@ -715,30 +719,30 @@ function etiqueta(valor){
     return limpiar(valor)
         .replace(/^\d+\.?\s*/,"")
         .replace(/^Opción\s*\d+:\s*/i,"")
-        .replace(/\s+*g," ");
+        .replace(/\s+/g," ");
 }
 
-function numeroCalifica*ion(valor){
-    const texto = limp*ar(valor);
+function numeroCalificacion(valor){
+    const texto = limpiar(valor);
 
-    if(texto.startsWit*("5")){
+    if(texto.startsWith("5")){
         return 5;
     }
 
- *  if(texto.startsWith("4")){
-     *  return 4;
+    if(texto.startsWith("4")){
+        return 4;
     }
 
-    if(texto.st*rtsWith("3")){
+    if(texto.startsWith("3")){
         return 3;
- *  }
+    }
 
-    if(texto.startsWith("2"))*
+    if(texto.startsWith("2")){
         return 2;
     }
 
-    if(t*xto.startsWith("1")){
-        retu*n 1;
+    if(texto.startsWith("1")){
+        return 1;
     }
 
     return null;
@@ -746,12 +750,7 @@ function numeroCalifica*ion(valor){
 
 function esSi(valor){
     const texto = normalizar(valor);
-    return texto === "si" || texto.startsWith("1 si");
-}
-
-function esNo(valor){
-    const texto = normalizar(valor);
-    return texto === "no" || texto.startsWith("2 no");
+    return texto === "si" || texto === "sí" || texto.startsWith("1 si") || texto.startsWith("1 sí");
 }
 
 function porcentaje(valor,total){
@@ -820,10 +819,10 @@ function llenarSelect(id,valores,texto){
 }
 
 function aplicarFiltros(){
-    const ciudad = document.getElementById("filtroCiudad").value;
-    const sede = document.getElementById("filtroSede").value;
-    const servicio = document.getElementById("filtroServicio").value;
-    const busqueda = document.getElementById("busquedaTexto").value.toLowerCase();
+    const ciudad = document.getElementById("filtroCiudad")?.value || "";
+    const sede = document.getElementById("filtroSede")?.value || "";
+    const servicio = document.getElementById("filtroServicio")?.value || "";
+    const busqueda = (document.getElementById("busquedaTexto")?.value || "").toLowerCase();
 
     datosFiltrados = datosOriginales.filter(fila => {
 
@@ -855,26 +854,6 @@ function promedioColumna(data,columna){
     const valores = data
         .map(fila => numeroCalificacion(fila[columna]))
         .filter(valor => valor !== null);
-
-    if(!valores.length){
-        return 0;
-    }
-
-    return valores.reduce((a,b) => a + b, 0) / valores.length;
-}
-
-function promedioColumnas(data,columnas){
-    const valores = [];
-
-    columnas.forEach(columna => {
-        data.forEach(fila => {
-            const valor = numeroCalificacion(fila[columna]);
-
-            if(valor !== null){
-                valores.push(valor);
-            }
-        });
-    });
 
     if(!valores.length){
         return 0;
@@ -991,17 +970,40 @@ function actualizarKPIs(data){
     const esperaTop = top(esperaMapa,1);
     const esperaTexto = esperaTop.length ? esperaTop[0][0] : "Sin dato";
 
-    document.getElementById("totalEncuestas").textContent = total;
-    document.getElementById("totalSedes").textContent = sedes;
-    document.getElementById("promedioGeneral").textContent = satisfaccion + "%";
-    document.getElementById("tiempoPromedio").textContent = esperaTexto;
+    const totalEncuestas = document.getElementById("totalEncuestas");
+    const totalSedes = document.getElementById("totalSedes");
+    const promedioGeneral = document.getElementById("promedioGeneral");
+    const tiempoPromedio = document.getElementById("tiempoPromedio");
+    const indicadorGeneral = document.getElementById("indicadorGeneral");
 
-    document.getElementById("indicadorGeneral").textContent = satisfaccion + "%";
+    if(totalEncuestas){
+        totalEncuestas.textContent = total;
+    }
 
-    const grados = Math.round((satisfaccion / 100) * 360);
+    if(totalSedes){
+        totalSedes.textContent = sedes;
+    }
 
-    document.querySelector(".circle").style.background =
-        `conic-gradient(#FFE000 0deg, #FFE000 ${grados}deg, #E7EEF8 ${grados}deg)`;
+    if(promedioGeneral){
+        promedioGeneral.textContent = satisfaccion + "%";
+    }
+
+    if(tiempoPromedio){
+        tiempoPromedio.textContent = esperaTexto;
+    }
+
+    if(indicadorGeneral){
+        indicadorGeneral.textContent = satisfaccion + "%";
+    }
+
+    const circle = document.querySelector(".circle");
+
+    if(circle){
+        const grados = Math.round((satisfaccion / 100) * 360);
+
+        circle.style.background =
+            `conic-gradient(#FFE000 0deg, #FFE000 ${grados}deg, #E7EEF8 ${grados}deg)`;
+    }
 }
 
 function pintarCalificacion(data){
@@ -1046,7 +1048,13 @@ function pintarDemografia(data){
     const sexo = conteo(data.map(fila => etiqueta(fila[C.sexo])));
     const educacion = conteo(data.map(fila => etiqueta(fila[C.educacion])));
 
-    document.getElementById("demografia").innerHTML = `
+    const demografia = document.getElementById("demografia");
+
+    if(!demografia){
+        return;
+    }
+
+    demografia.innerHTML = `
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
 
             <div>
@@ -1073,6 +1081,12 @@ function pintarDemografia(data){
 }
 
 function pintarMejoras(data){
+    const tabla = document.getElementById("tablaMejoras");
+
+    if(!tabla){
+        return;
+    }
+
     const aspectos = [
         ...infraestructuraCols,
         ...servidorCols,
@@ -1092,7 +1106,7 @@ function pintarMejoras(data){
     .sort((a,b) => a.promedio - b.promedio)
     .slice(0,12);
 
-    document.getElementById("tablaMejoras").innerHTML =
+    tabla.innerHTML =
         resultados.map(item => `
             <tr>
                 <td>${item.columna}</td>
@@ -1102,6 +1116,12 @@ function pintarMejoras(data){
 }
 
 function pintarComentarios(data){
+    const contenedor = document.getElementById("comentarios");
+
+    if(!contenedor){
+        return;
+    }
+
     const comentarios = [];
 
     data.forEach(fila => {
@@ -1122,12 +1142,12 @@ function pintarComentarios(data){
     const seleccion = comentarios.slice(0,12);
 
     if(!seleccion.length){
-        document.getElementById("comentarios").innerHTML =
+        contenedor.innerHTML =
             "<p style='color:#6D7C9B;'>No hay comentarios disponibles para este filtro.</p>";
         return;
     }
 
-    document.getElementById("comentarios").innerHTML =
+    contenedor.innerHTML =
         seleccion.map(texto => `
             <div style="
                 padding:16px;
@@ -1154,24 +1174,34 @@ function pintarInsights(data){
     const variasVeces = data.filter(fila => esSi(fila[C.varias])).length;
     const pctVarias = porcentaje(variasVeces,total);
 
-    document.getElementById("insight1").innerHTML = `
-        <p style="color:#6D7C9B;line-height:1.6;">
-            La satisfacción consolidada del filtro activo es de
-            <strong>${satisfaccion}%</strong>, calculada con la calificación general del servicio.
-        </p>
-    `;
+    const insight1 = document.getElementById("insight1");
+    const insight2 = document.getElementById("insight2");
+    const insight3 = document.getElementById("insight3");
 
-    document.getElementById("insight2").innerHTML = `
-        <p style="color:#6D7C9B;line-height:1.6;">
-            El <strong>${pctRespuesta}%</strong> de los registros indica que la entidad dio respuesta efectiva al requerimiento ciudadano.
-        </p>
-    `;
+    if(insight1){
+        insight1.innerHTML = `
+            <p style="color:#6D7C9B;line-height:1.6;">
+                La satisfacción consolidada del filtro activo es de
+                <strong>${satisfaccion}%</strong>, calculada con la calificación general del servicio.
+            </p>
+        `;
+    }
 
-    document.getElementById("insight3").innerHTML = `
-        <p style="color:#6D7C9B;line-height:1.6;">
-            El <strong>${pctVarias}%</strong> de los ciudadanos tuvo que acudir varias veces, lo que permite identificar oportunidades de mejora en resolución en primer contacto.
-        </p>
-    `;
+    if(insight2){
+        insight2.innerHTML = `
+            <p style="color:#6D7C9B;line-height:1.6;">
+                El <strong>${pctRespuesta}%</strong> de los registros indica que la entidad dio respuesta efectiva al requerimiento ciudadano.
+            </p>
+        `;
+    }
+
+    if(insight3){
+        insight3.innerHTML = `
+            <p style="color:#6D7C9B;line-height:1.6;">
+                El <strong>${pctVarias}%</strong> de los ciudadanos tuvo que acudir varias veces, indicador útil para revisar la resolución en primer contacto.
+            </p>
+        `;
+    }
 }
 
 function actualizarDashboard(){
@@ -1219,17 +1249,20 @@ function inicializarFiltros(){
         "Todos los servicios"
     );
 
-    document.getElementById("filtroCiudad")
-        .addEventListener("change", aplicarFiltros);
+    document.getElementById("filtroCiudad")?.addEventListener("change", aplicarFiltros);
+    document.getElementById("filtroSede")?.addEventListener("change", aplicarFiltros);
+    document.getElementById("filtroServicio")?.addEventListener("change", aplicarFiltros);
+    document.getElementById("busquedaTexto")?.addEventListener("input", aplicarFiltros);
+}
 
-    document.getElementById("filtroSede")
-        .addEventListener("change", aplicarFiltros);
+function validarArchivoExcel(buffer){
+    const bytes = new Uint8Array(buffer.slice(0,4));
 
-    document.getElementById("filtroServicio")
-        .addEventListener("change", aplicarFiltros);
+    const firmaZip =
+        bytes[0] === 0x50 &&
+        bytes[1] === 0x4B;
 
-    document.getElementById("busquedaTexto")
-        .addEventListener("input", aplicarFiltros);
+    return firmaZip;
 }
 
 async function cargarExcel(){
@@ -1240,8 +1273,10 @@ async function cargarExcel(){
     }
 
     if(typeof XLSX === "undefined"){
-        estado.innerHTML =
-            "ERROR: La librería XLSX no cargó. Revisa la etiqueta script del CDN.";
+        if(estado){
+            estado.innerHTML =
+                "ERROR: La librería XLSX no cargó. Revisa la etiqueta script del CDN.";
+        }
         return;
     }
 
@@ -1265,6 +1300,11 @@ async function cargarExcel(){
 
             const buffer = await respuesta.arrayBuffer();
 
+            if(!validarArchivoExcel(buffer)){
+                ultimoError = archivo + " - La URL respondió algo que no es un archivo XLSX.";
+                continue;
+            }
+
             const libro = XLSX.read(buffer,{
                 type:"array"
             });
@@ -1275,30 +1315,39 @@ async function cargarExcel(){
                 defval:""
             });
 
+            if(!datosOriginales.length){
+                ultimoError = archivo + " - El Excel cargó, pero no contiene registros.";
+                continue;
+            }
+
             datosFiltrados = [...datosOriginales];
 
             inicializarFiltros();
             actualizarDashboard();
 
-            estado.innerHTML =
-                "Datos cargados automáticamente: " +
-                datosOriginales.length +
-                " registros";
+            if(estado){
+                estado.innerHTML =
+                    "Datos cargados automáticamente: " +
+                    datosOriginales.length +
+                    " registros";
+            }
 
             return;
 
         }catch(error){
-            ultimoError = error.message;
+            ultimoError = archivo + " - " + error.message;
         }
     }
 
-    estado.innerHTML =
-        "ERROR CARGANDO EXCEL: " + ultimoError;
+    if(estado){
+        estado.innerHTML =
+            "ERROR CARGANDO EXCEL: " + ultimoError;
+    }
 }
 
 window.addEventListener("DOMContentLoaded", cargarExcel);
-
 </script>
+    
 </div>
 </body>
 </html>
