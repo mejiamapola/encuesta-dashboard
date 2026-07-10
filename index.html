@@ -2,6 +2,7 @@
 <html lang="es">
 
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -14,12 +15,7 @@
     --azulOscuro:#001F5B;
     --amarillo:#FFE000;
     --rojo:#D81E05;
-
-    --gris:#F5F7FB;
-    --texto:#003A8C;
 }
-
-    
 
 *{
     margin:0;
@@ -28,14 +24,14 @@
 }
 
 body{
-    font-family:'Segoe UI',sans-serif;
-    background:#FFFFFF;
-    color:var(--texto);
+    font-family:Segoe UI, Arial, sans-serif;
+    background:white;
+    color:#003A8C;
 }
 
 .header{
     text-align:center;
-    padding:60px 20px 40px;
+    padding:60px 20px 30px;
 }
 
 .header h1{
@@ -45,22 +41,22 @@ body{
 }
 
 .linea{
-    width:220px;
+    width:230px;
     height:6px;
-    background:var(--rojo);
     border-radius:999px;
+    background:var(--rojo);
     margin:20px auto;
 }
 
-.header p{
-    color:#6B7CA3;
+.subtitulo{
+    color:#6D7C9B;
     font-size:1.2rem;
 }
 
-.panel{
+.contenedor{
     max-width:1400px;
     margin:auto;
-    padding:20px 40px 60px;
+    padding:40px;
 }
 
 .grid{
@@ -76,6 +72,18 @@ body{
 
 .card{
 
+    background:white;
+
+    border-radius:30px;
+
+    padding:30px;
+
+    border:1px solid #E3EBF9;
+
+    text-decoration:none;
+
+    color:inherit;
+
     display:flex;
 
     flex-direction:column;
@@ -84,32 +92,24 @@ body{
 
     justify-content:center;
 
-    min-height:260px;
+    min-height:250px;
 
-    padding:30px;
-
-    text-decoration:none;
-
-    background:white;
-
-    border-radius:30px;
-
-    border:1px solid #E4EAF7;
+    transition:.3s;
 
     box-shadow:
-    0 12px 30px rgba(0,58,140,.08);
+    0 15px 35px rgba(0,58,140,.08);
 
-    transition:.3s ease;
 }
 
 .card:hover{
 
     transform:translateY(-8px);
 
-    box-shadow:
-    0 25px 40px rgba(0,58,140,.15);
-
     border-color:var(--amarillo);
+
+    box-shadow:
+    0 25px 45px rgba(0,58,140,.15);
+
 }
 
 .numero{
@@ -120,21 +120,21 @@ body{
     border-radius:50%;
 
     display:flex;
-    align-items:center;
     justify-content:center;
+    align-items:center;
 
-    background:linear-gradient(
-            135deg,
-            #FFE000,
-            #FFC400
+    background:
+    linear-gradient(
+        135deg,
+        #FFE000,
+        #FFC400
     );
 
     color:var(--azulOscuro);
 
-    font-size:2.6rem;
+    font-size:2.5rem;
 
     font-weight:900;
-
 }
 
 .titulo{
@@ -157,23 +157,23 @@ body{
 
     text-align:center;
 
-    color:#7382A3;
+    color:#6D7C9B;
 
-    line-height:1.5;
+    line-height:1.4;
 
 }
 
 .badge{
 
-    margin-top:18px;
+    margin-top:15px;
 
-    padding:8px 14px;
-
-    background:#FFF8D6;
-
-    border-radius:999px;
+    background:#FFF6C7;
 
     color:var(--azul);
+
+    padding:8px 15px;
+
+    border-radius:999px;
 
     font-size:.85rem;
 
@@ -185,17 +185,11 @@ footer{
 
     text-align:center;
 
-    padding:35px;
+    margin-top:50px;
 
-    color:#8694AF;
+    padding:30px;
 
-}
-
-@media(max-width:768px){
-
-    .header h1{
-        font-size:2.4rem;
-    }
+    color:#8796B1;
 
 }
 
@@ -205,127 +199,127 @@ footer{
 
 <body>
 
-<section class="header">
+<div class="header">
 
     <h1>Centro de Analítica de Encuestas</h1>
 
     <div class="linea"></div>
 
-    <p>
+    <div class="subtitulo">
         Seleccione una encuesta para visualizar el dashboard interactivo
-    </p>
-
-</section>
-
-<section class="panel">
-
-<div class="grid">
-
-    encuesta1.html
-
-        <div class="numero">1</div>
-
-        <div class="titulo">
-            Encuesta 1
-        </div>
-
-        <div class="descripcion">
-            Dashboard interactivo
-        </div>
-
-    </a>
-
-    encuesta-ciudadanos.html
-
-        <div class="numero">2</div>
-
-        <div class="titulo">
-            Encuesta Ciudadanos
-        </div>
-
-        <div class="descripcion">
-            Satisfacción, atención y experiencia ciudadana
-        </div>
-
-        <div class="badge">
-            Disponible
-        </div>
-
-    </a>
-
-    encuesta3.html
-
-        <div class="numero">3</div>
-
-        <div class="titulo">
-            Encuesta 3
-        </div>
-
-        <div class="descripcion">
-            Dashboard interactivo
-        </div>
-
-    </a>
-
-    encuesta4.html
-
-        <div class="numero">4</div>
-
-        <div class="titulo">
-            Encuesta 4
-        </div>
-
-        <div class="descripcion">
-            Dashboard interactivo
-        </div>
-
-    </a>
-
-    encuesta5.html
-
-        <div class="numero">5</div>
-
-        <div class="titulo">
-            Encuesta 5
-        </div>
-
-        <div class="descripcion">
-            Dashboard interactivo
-        </div>
-
-    </a>
-
-    encuesta6.html
-
-        <div class="numero">6</div>
-
-        <div class="titulo">
-            Encuesta 6
-        </div>
-
-        <div class="descripcion">
-            Dashboard interactivo
-        </div>
-
-    </a>
-
-    encuesta7.html
-
-        <div class="numero">7</div>
-
-        <div class="titulo">
-            Encuesta 7
-        </div>
-
-        <div class="descripcion">
-            Dashboard interactivo
-        </div>
-
-    </a>
+    </div>
 
 </div>
 
-</section>
+<div class="contenedor">
+
+    <div class="grid">
+
+        encuesta1.html
+
+            <div class="numero">1</div>
+
+            <div class="titulo">
+                Encuesta 1
+            </div>
+
+            <div class="descripcion">
+                Dashboard interactivo
+            </div>
+
+        </a>
+
+        <a class="card" href="encuesta-ciudadanos.html">
+
+            <div class="numero">2</div>
+
+            <div class="titulo">
+                Encuesta Ciudadanos
+            </div>
+
+            <div class="descripcion">
+                Satisfacción, atención y experiencia ciudadana
+            </div>
+
+            <div class="badge">
+                Disponible
+            </div>
+
+        </a>
+
+        encuesta3.html
+
+            <div class="numero">3</div>
+
+            <div class="titulo">
+                Encuesta 3
+            </div>
+
+            <div class="descripcion">
+                Dashboard interactivo
+            </div>
+
+        </a>
+
+        encuesta4.html
+
+            <div class="numero">4</div>
+
+            <div class="titulo">
+                Encuesta 4
+            </div>
+
+            <div class="descripcion">
+                Dashboard interactivo
+            </div>
+
+        </a>
+
+        encuesta5.html
+
+            <div class="numero">5</div>
+
+            <div class="titulo">
+                Encuesta 5
+            </div>
+
+            <div class="descripcion">
+                Dashboard interactivo
+            </div>
+
+        </a>
+
+        encuesta6.html
+
+            <div class="numero">6</div>
+
+            <div class="titulo">
+                Encuesta 6
+            </div>
+
+            <div class="descripcion">
+                Dashboard interactivo
+            </div>
+
+        </a>
+
+        encuesta7.html
+
+            <div class="numero">7</div>
+
+            <div class="titulo">
+                Encuesta 7
+            </div>
+
+            <div class="descripcion">
+                Dashboard interactivo
+            </div>
+
+        </a>
+
+    </div>
+
+</div>
 
 <footer>
     Centro de Analítica de Encuestas
