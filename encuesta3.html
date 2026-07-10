@@ -658,585 +658,649 @@ Resultado consolidado
 </section>
 
 <script>
-
-let datosOriginales = [];
-let datosFiltrados = [];
-
-const EXCEL_URLS = [
-
-"Instrumento 3 - Encuesta Servidores(1-219).xlsx",
-"Instrumento%203%20-%20Encuesta%20Servidores(1-219).xlsx",
-"Instrumento%203%20-%20Encuesta%20Servidores%281-219%29.xlsx"
-
-];
-
-const C = {
-
-sede:
-"Nombre de la Sede (Tipo / Descripción)",
-
-servicios:
-"Seleccione el o los servicios que usted presta.",
-
-calidad:
-"¿Cómo califica la calidad de la prestación del servicio ofrecido por la Entidad?",
-
-canal:
-"De acuerdo a su percepción ¿Cuál de los siguientes canales preferiría usar el ciudadano?",
-
-obstaculos:
-"¿Cuáles son los principales obstáculos  que se le presentan al atender ciudadanos?",
-
-capacitacion:
-"¿Ha recibido capacitación y/o sensiblización en temas de servicio al ciudadano?",
-
-tiempo:
-"¿Cuánto tiempo en promedio se demora en atender un trámite o servicio?",
-
-mejoraPunto:
-"¿Qué le cambiaría a este punto de servicio?",
-
-mejoraCiudadano:
-"¿Qué mejoraría Usted de la relación entre usted y el ciudadano?",
-
-edad:
-"Edad",
-
-sexo:
-"Sexo de nacimiento",
-
-educacion:
-"Último Nivel educativo alcanzado",
-
-cargo:
-"Cargo o labor que desempeña"
-
-};
-
-const CALIFICACIONES = [
-
-"Claridad de la información",
-"Rapidez en la atención",
-"Sencillez de los procesos y procedimientos",
-"Claridad de los requisitos",
-"Respeto por el turno de atención",
-"Cumplimiento horarios de atención",
-"Señalización interna",
-"Señalización externa",
-"Espacio adecuado en salas de espera",
-"Espacio adecuado en modulos de atención",
-"Limpieza",
-"Orden",
-"Cantidad de ventanillas/modulos"
-
-];
-
-function limpiar(v){
-
-if(v===null || v===undefined){
-return "";
-}
-
-return String(v).trim();
-
-}
-
-function porcentaje(a,b){
-
-if(!b){
-return 0;
-}
-
-return Math.round((a*100)/b);
-
-}
-
-function conteo(lista){
-
-const mapa={};
-
-lista.forEach(x=>{
-
-const c=limpiar(x) || "Sin dato";
-
-mapa[c]=(mapa[c]||0)+1;
-
-});
-
-return mapa;
-
-}
-
-function top(mapa,limite=10){
-
-return Object.entries(mapa)
-.sort((a,b)=>b[1]-a[1])
-.slice(0,limite);
-
-}
-
-function barras(id,items,total){
-
-const div=document.getElementById(id);
-
-if(!div){
-return;
-}
-
-const max=Math.max(
-...items.map(x=>x[1]),
-1
-);
-
-div.innerHTML =
-items.map(item=>{
-
-const nombre=item[0];
-const valor=item[1];
-
-const ancho=
-(valor/max)*100;
-
-const pct=
-porcentaje(valor,total);
-
-return `
-
-<div class="bar">
-
-<div class="bar-label">
-<span>${nombre}</span>
-<strong>${valor} · ${pct}%</strong>
-</div>
-
-<div class="bar-track">
-
-<div
-class="bar-fill"
-style="
-width:${ancho}%;
-">
-</div>
-
-</div>
-
-</div>
-
-`;
-
-}).join("");
-
-}
-
-function mediaCalificaciones(){
-
-let suma=0;
-let cantidad=0;
-
-CALIFICACIONES.forEach(col=>{
-
-datosFiltrados.forEach(row=>{
-
-const n =
-Number(row[col]);
-
-if(!isNaN(n) && n>0){
-
-suma+=n;
-cantidad++;
-
-}
-
-});
-
-});
-
-if(!cantidad){
-return 0;
-}
-
-return (suma/cantidad);
-
-}
-
-function actualizarKPIs(){
-
-const total=
-datosFiltrados.length;
-
-const sedes=
-new Set(
-datosFiltrados.map(
-x=>x[C.sede]
-)
-).size;
-
-const cargos=
-new Set(
-datosFiltrados.map(
-x=>x[C.cargo]
-)
-).size;
-
-const promedio=
-mediaCalificaciones();
-
-const indicador=
-Math.round(
-(promedio/5)*100
-);
-
-document.getElementById(
-"totalEncuestas"
-).textContent=total;
-
-document.getElementById(
-"totalAreas"
-).textContent=sedes;
-
-document.getElementById(
-"totalCargos"
-).textContent=cargos;
-
-document.getElementById(
-"porcentajePositivo"
-).textContent=
-indicador+"%";
-
-document.getElementById(
-"indicadorGeneral"
-).textContent=
-indicador+"%";
-
-const circle=
-document.querySelector(
-".circle"
-);
-
-const grados=
-Math.round(
-indicador*3.6
-);
-
-circle.style.background=
-`conic-gradient(
-#FFE000 0deg,
-#FFE000 ${grados}deg,
-#E6EDF8 ${grados}deg
-)`;
-
-}
-
-function actualizarDashboard(){
-
-actualizarKPIs();
-
-barras(
-"rankingAreas",
-top(
-conteo(
-datosFiltrados.map(
-x=>x[C.sede]
-)
-)
-),
-datosFiltrados.length
-);
-
-barras(
-"rankingCargos",
-top(
-conteo(
-datosFiltrados.map(
-x=>x[C.cargo]
-)
-)
-),
-datosFiltrados.length
-);
-
-const servicios=[];
-
-datosFiltrados.forEach(row=>{
-
-limpiar(
-row[C.servicios]
-)
-.split(";")
-.forEach(item=>{
-
-if(item.trim()){
-
-servicios.push(
-item.trim()
-);
-
-}
-
-});
-
-});
-
-barras(
-"canalesAtencion",
-top(
-conteo(servicios),
-12
-),
-datosFiltrados.length
-);
-
-const canales=[];
-
-datosFiltrados.forEach(row=>{
-
-limpiar(
-row[C.canal]
-)
-.split(";")
-.forEach(item=>{
-
-if(item.trim()){
-
-canales.push(
-item.trim()
-);
-
-}
-
-});
-
-});
-
-barras(
-"graficoConocimiento",
-top(
-conteo(canales),
-10
-),
-datosFiltrados.length
-);
-
-const obstaculos=[];
-
-datosFiltrados.forEach(row=>{
-
-limpiar(
-row[C.obstaculos]
-)
-.split(";")
-.forEach(item=>{
-
-if(item.trim()){
-
-obstaculos.push(
-item.trim()
-);
-
-}
-
-});
-
-});
-
-barras(
-"capacidadOperativa",
-top(
-conteo(obstaculos),
-12
-),
-datosFiltrados.length
-);
-
-const atributos = CALIFICACIONES.map(col=>{
-
-let suma=0;
-let total=0;
-
-datosFiltrados.forEach(row=>{
-
-const n=
-Number(row[col]);
-
-if(!isNaN(n)){
-
-suma+=n;
-total++;
-
-}
-
-});
-
-return [
-col,
-total
-?
-(suma/total)
-:
-0
-];
-
-});
-
-document.getElementById(
-"condicionesServicio"
-).innerHTML =
-
-atributos.map(item=>`
-
-<div class="bar">
-
-<div class="bar-label">
-
-<span>${item[0]}</span>
-
-<strong>
-${item[1].toFixed(1)} / 5
-</strong>
-
-</div>
-
-<div class="bar-track">
-
-<div
-class="bar-fill"
-style="
-width:${(item[1]/5)*100}%;
-">
-</div>
-
-</div>
-
-</div>
-
-`).join("");
-
-const comentarios=[];
-
-datosFiltrados.forEach(row=>{
-
-if(limpiar(row[C.mejoraPunto]).length>5){
-
-comentarios.push(
-row[C.mejoraPunto]
-);
-
-}
-
-if(limpiar(row[C.mejoraCiudadano]).length>5){
-
-comentarios.push(
-row[C.mejoraCiudadano]
-);
-
-}
-
-});
-
-document.getElementById(
-"observaciones"
-).innerHTML =
-
-comentarios
-.slice(0,25)
-.map(x=>`
-
-<div style="
-padding:15px;
-border:1px solid #DCE5F2;
-border-radius:15px;
-margin-bottom:10px;
-">
-
-${x}
-
-</div>
-
-`)
-.join("");
-
-document.getElementById(
-"graficoResultado"
-).innerHTML =
-`<h1>${Math.round((mediaCalificaciones()/5)*100)}%</h1>`;
-
-}
-
-async function cargarExcel(){
-
-const estado=
-document.getElementById(
-"estadoCarga"
-);
-
-estado.innerHTML=
-"Cargando datos...";
-
-for(const archivo of EXCEL_URLS){
-
-try{
-
-const r =
-await fetch(
-archivo
-);
-
-if(!r.ok){
-continue;
-}
-
-const buffer=
-await r.arrayBuffer();
-
-const libro=
-XLSX.read(
-buffer,
-{
-type:"array"
-}
-);
-
-const hoja=
-libro.Sheets[
-libro.SheetNames[0]
-];
-
-datosOriginales=
-XLSX.utils.sheet_to_json(
-hoja,
-{
-defval:""
-}
-);
-
-datosFiltrados=
-[...datosOriginales];
-
-actualizarDashboard();
-
-estado.innerHTML=
-"Datos cargados: "
-+
-datosOriginales.length
-+
-" registros";
-
-return;
-
-}
-catch(e){}
-
-}
-
-estado.innerHTML=
-"ERROR: No se pudo cargar el archivo Excel.";
-
-}
-
-window.addEventListener(
-"DOMContentLoaded",
-cargarExcel
-);
+(function(){
+
+    const estado = document.getElementById("estadoCarga");
+
+    if(estado){
+        estado.innerHTML = "Script iniciado. Preparando carga del Excel...";
+    }
+
+    window.onerror = function(mensaje, archivo, linea){
+        if(estado){
+            estado.innerHTML =
+                "ERROR JAVASCRIPT:<br>" +
+                mensaje +
+                "<br>Línea: " + linea;
+        }
+    };
+
+    let datosOriginales = [];
+    let datosFiltrados = [];
+
+    const EXCEL_NOMBRE = "Instrumento 3 - Encuesta Servidores(1-219).xlsx";
+
+    const EXCEL_URLS = [
+        "./Instrumento%203%20-%20Encuesta%20Servidores%281-219%29.xlsx",
+        "./Instrumento%203%20-%20Encuesta%20Servidores(1-219).xlsx",
+        "./" + encodeURIComponent(EXCEL_NOMBRE),
+        "./" + EXCEL_NOMBRE,
+        "Instrumento%203%20-%20Encuesta%20Servidores%281-219%29.xlsx",
+        "Instrumento%203%20-%20Encuesta%20Servidores(1-219).xlsx",
+        "Instrumento 3 - Encuesta Servidores(1-219).xlsx",
+        "https://raw.githubusercontent.com/mejiamapola/encuesta-dashboard/main/Instrumento%203%20-%20Encuesta%20Servidores%281-219%29.xlsx",
+        "https://raw.githubusercontent.com/mejiamapola/encuesta-dashboard/master/Instrumento%203%20-%20Encuesta%20Servidores%281-219%29.xlsx"
+    ];
+
+    const C = {
+        sede: "Nombre de la Sede (Tipo / Descripción)",
+        servicios: "Seleccione el o los servicios que usted presta.",
+        servidor: "Nombre del Servidor Público",
+        calidad: "¿Cómo califica la calidad de la prestación del servicio ofrecido por la Entidad?",
+        tipoServicio: " ¿Qué tipo de servicio atiende con más frecuencia?",
+        conoceTramites: ". ¿Conoce los  trámites y servicios que presta su  Entidad?",
+        ciudadanoConoce: " ¿Considera que los ciudadanos conocen los trámites y servicios que se presta su Entidad?",
+        identificaVentanilla: "  ¿Considera que los ciudadanos identifican claramente a qué ventanilla u oficina deben dirigirse para realizar su trámite y/o servicio?",
+        otrosCanales: "¿Considera que la Entidad debe poner a disposición del ciudadano otros canales a través de los cuales pueda realizar el mismo trámite?",
+        canalesCuales: "En caso afirmativo de la anterior pregunta indique cuales.",
+        canal: "De acuerdo a su percepción ¿Cuál de los siguientes canales preferiría usar el ciudadano?",
+        tiempo: "¿Cuánto tiempo en promedio se demora en atender un trámite o servicio?",
+        tiempoDescripcion: "De acuerdo con su respuesta a la anterior pregunta, describa porque?",
+        noCompetencia: "¿Recibe con frecuencia ciudadanos que presentan solicitudes que no son competencia de la Entidad?",
+        queHace: "Cuando recibe solicitudes que no son competencia de la Entidad, ¿Qué hace en esos casos?",
+        capacitacion: "¿Ha recibido capacitación y/o sensiblización en temas de servicio al ciudadano?",
+        frecuenciaCapacitacion: "¿Con que frecuencia ha recibido capacitación y/o sensibilización en temas de servicio a la ciudada",
+        tematicas: "¿Cuáles son las principales temáticas en las que ha recibido capacitación y/o sensibilización?",
+        incentivos: "4. ¿Ha recibido incentivos o reconocimientos por buen desempeño en el servicio a la ciudadanía?",
+        obstaculos: "¿Cuáles son los principales obstáculos  que se le presentan al atender ciudadanos?",
+        percepcionCargo: "¿Cómo se siente usted al haber sido ubicado en un punto de servicio al ciudadano?",
+        mejoraPunto: "¿Qué le cambiaría a este punto de servicio?",
+        mejoraCiudadano: "¿Qué mejoraría Usted de la relación entre usted y el ciudadano?",
+        manualDiferencial: "Conoce si existe dentro del modelo de servicio al ciudadano un manual de Atención Diferencial para Grupos Poblacionales?",
+        serviciosDiscapacidad: "Considera que los servicios/modelos de atención de la PGN se facilitan para las personas con discapacidades Física, Visual, Auditiva, Intelectual, Psicosocial, Multiple, Sordoceguera",
+        herramientasDiscapacidad: "Cuenta con herramientas (operativas y técnicas) que le facilitan prestar estos servicios a personas con discapacidad?",
+        etnico: "Tiene conocimientos para brindar atención diferencial a grupos poblacionales con pertenencia etnica?",
+        discapacidad: "Tiene conocimientos para brindar atención diferencial a grupos poblacionales con discapacidades?",
+        formacionDiferencial: "Ha recibido formación desde la PGN para brindar atención con enfoques diferenciales de género, – incluyendo sexo, orientación sexual e identidad de género -, el ciclovital, la discapacidad, la per...",
+        rutasVBG: "Como se maneja el tema de primer respondiente en casos de VBG (violencias basadas en genero), riesgos de protección urgente u otras rutas críticas?",
+        victimas: "Conoce las rutas de atención para población vítima del conflicto armado?",
+        migrante: "Considera si dentro del modelo de servicio al ciudadano de la procuraduría se brinda atención diferencial a población migrante?",
+        infancia: "Conoce las rutas de atención diferencial para casos relacionados con primera infancia, niños, niñas y adolecentes?",
+        edad: "Edad",
+        sexo: "Sexo de nacimiento",
+        reconoce: "¿Usted se reconoce como?",
+        educacion: "Último Nivel educativo alcanzado",
+        cargo: "Cargo o labor que desempeña",
+        condicionDiscapacidad: "Se encuentra ud en condición de discapacidad?",
+        grupoEtnico: "Se autoreconoce como perteneciente a un grupo étnico"
+    };
+
+    const CALIFICACIONES = [
+        "Claridad de la información",
+        "Rapidez en la atención",
+        "Sencillez de los procesos y procedimientos",
+        "Claridad de los requisitos",
+        "Respeto por el turno de atención",
+        "Cumplimiento horarios de atención",
+        "Señalización interna",
+        "Señalización externa",
+        "Espacio adecuado en salas de espera",
+        "Espacio adecuado en modulos de atención",
+        "Limpieza",
+        "Orden",
+        "Cantidad de ventanillas/modulos"
+    ];
+
+    const DIFERENCIAL = [
+        C.manualDiferencial,
+        C.serviciosDiscapacidad,
+        C.herramientasDiscapacidad,
+        C.etnico,
+        C.discapacidad,
+        C.formacionDiferencial,
+        C.victimas,
+        C.migrante,
+        C.infancia
+    ];
+
+    function limpiar(valor){
+        if(valor === null || valor === undefined){
+            return "";
+        }
+
+        return String(valor).trim();
+    }
+
+    function normalizar(valor){
+        return limpiar(valor)
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g,"")
+            .toLowerCase();
+    }
+
+    function etiqueta(valor){
+        return limpiar(valor)
+            .replace(/^\d+\.?\s*/,"")
+            .replace(/^Opción\s*\d+:\s*/i,"")
+            .replace(*\s+/g," ");
+    }
+
+    function nu*ero(valor){
+        const texto = *impiar(valor);
+
+        if(texto.s*artsWith("5")) return 5;
+        i*(texto.startsWith("4")) return 4;
+*       if(texto.startsWith("3")) r*turn 3;
+        if(texto.startsWit*("2")) return 2;
+        if(texto.*tartsWith("1")) return 1;
+
+       *const n = Number(texto);
+
+        *f(!isNaN(n) && n > 0){
+           *return n;
+        }
+
+        retur* null;
+    }
+
+    function esSi(va*or){
+        const texto = normali*ar(valor);
+        return texto ==* "si" || texto === "sí" || texto.s*artsWith("1 si") || texto.startsWi*h("1 sí");
+    }
+
+    function por*entaje(valor,total){
+        if(!t*tal) return 0;
+        return Math*round((valor * 100) / total);
+    *
+
+    function partir(valor){
+    *   return limpiar(valor)
+         *  .split(";")
+            .map(fun*tion(x){
+                return et*queta(x);
+            })
+         *  .filter(function(x){
+                return x.length > 0;
+            });
+    }
+
+    function conteo(lista){
+        const mapa = {};
+
+        lista.forEach(function(item){
+            const clave = etiqueta(item) || "Sin dato";
+            mapa[clave] = (mapa[clave] || 0) + 1;
+        });
+
+        return mapa;
+    }
+
+    function top(mapa,limite){
+        return Object.entries(mapa)
+            .sort(function(a,b){
+                return b[1] - a[1];
+            })
+            .slice(0, limite || 10);
+    }
+
+    function valoresUnicos(data,columna){
+        return [
+            ...new Set(
+                data
+                    .map(function(row){
+                        return etiqueta(row[columna]);
+                    })
+                    .filter(function(x){
+                        return x.length > 0;
+                    })
+            )
+        ].sort();
+    }
+
+    function barras(id,items,total){
+        const div = document.getElementById(id);
+
+        if(!div) return;
+
+        if(!items.length){
+            div.innerHTML = "<p style='color:#61779D'>Sin datos para este filtro.</p>";
+            return;
+        }
+
+        const max = Math.max(...items.map(function(x){ return x[1]; }),1);
+
+        div.innerHTML = items.map(function(item){
+
+            const nombre = item[0];
+            const valor = item[1];
+            const ancho = Math.max(4,(valor / max) * 100);
+            const pct = porcentaje(valor,total);
+
+            return `
+                <div class="bar">
+                    <div class="bar-label">
+                        <span>${nombre}</span>
+                        <strong>${valor} · ${pct}%</strong>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill" style="width:${ancho}%"></div>
+                    </div>
+                </div>
+            `;
+        }).join("");
+    }
+
+    function barrasPromedio(id,columnas,data){
+        const div = document.getElementById(id);
+
+        if(!div) return;
+
+        const items = columnas.map(function(columna){
+
+            let suma = 0;
+            let total = 0;
+
+            data.forEach(function(row){
+                const n = numero(row[columna]);
+
+                if(n !== null){
+                    suma += n;
+                    total++;
+                }
+            });
+
+            const promedio = total ? suma / total : 0;
+            const pct = Math.round((promedio / 5) * 100);
+
+            return {
+                nombre: columna,
+                promedio: promedio,
+                pct: pct
+            };
+
+        });
+
+        div.innerHTML = items.map(function(item){
+
+            let color = "#D81E05";
+
+            if(item.pct >= 80){
+                color = "#0E9F6E";
+            }else if(item.pct >= 60){
+                color = "#FFC400";
+            }
+
+            return `
+                <div class="bar">
+                    <div class="bar-label">
+                        <span>${item.nombre}</span>
+                        <strong>${item.promedio.toFixed(1)} / 5</strong>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill" style="width:${item.pct}%;background:${color};"></div>
+                    </div>
+                </div>
+            `;
+        }).join("");
+    }
+
+    function promedioGeneral(data){
+        let suma = 0;
+        let total = 0;
+
+        CALIFICACIONES.forEach(function(columna){
+            data.forEach(function(row){
+                const n = numero(row[columna]);
+
+                if(n !== null){
+                    suma += n;
+                    total++;
+                }
+            });
+        });
+
+        if(!total) return 0;
+
+        return suma / total;
+    }
+
+    function llenarSelect(id,valores,textoInicial){
+        const select = document.getElementById(id);
+
+        if(!select) return;
+
+        const actual = select.value;
+
+        let html = `<option value="">${textoInicial}</option>`;
+
+        valores.forEach(function(valor){
+            const seguro = String(valor).replace(/"/g,"&quot;");
+            html += `<option value="${seguro}">${valor}</option>`;
+        });
+
+        select.innerHTML = html;
+
+        if(valores.includes(actual)){
+            select.value = actual;
+        }
+    }
+
+    function aplicarFiltros(){
+        const area = document.getElementById("filtroArea") ? document.getElementById("filtroArea").value : "";
+        const cargo = document.getElementById("filtroCargo") ? document.getElementById("filtroCargo").value : "";
+        const sede = document.getElementById("filtroSede") ? document.getElementById("filtroSede").value : "";
+        const texto = document.getElementById("textoBusqueda") ? document.getElementById("textoBusqueda").value.toLowerCase() : "";
+
+        datosFiltrados = datosOriginales.filter(function(row){
+
+            const valorSede = etiqueta(row[C.sede]);
+            const valorCargo = etiqueta(row[C.cargo]);
+
+            const okArea = !area || valorSede === area;
+            const okCargo = !cargo || valorCargo === cargo;
+            const okSede = !sede || valorSede === sede;
+            const okTexto = !texto || Object.values(row).join(" ").toLowerCase().includes(texto);
+
+            return okArea && okCargo && okSede && okTexto;
+        });
+
+        actualizarDashboard();
+    }
+
+    function actualizarKPIs(){
+        const total = datosFiltrados.length;
+        const sedes = valoresUnicos(datosFiltrados,C.sede).length;
+        const cargos = valoresUnicos(datosFiltrados,C.cargo).length;
+        const indicador = Math.round((promedioGeneral(datosFiltrados) / 5) * 100);
+
+        const totalEncuestas = document.getElementById("totalEncuestas");
+        const totalAreas = document.getElementById("totalAreas");
+        const totalCargos = document.getElementById("totalCargos");
+        const porcentajePositivo = document.getElementById("porcentajePositivo");
+        const indicadorGeneral = document.getElementById("indicadorGeneral");
+
+        if(totalEncuestas) totalEncuestas.textContent = total;
+        if(totalAreas) totalAreas.textContent = sedes;
+        if(totalCargos) totalCargos.textContent = cargos;
+        if(porcentajePositivo) porcentajePositivo.textContent = indicador + "%";
+        if(indicadorGeneral) indicadorGeneral.textContent = indicador + "%";
+
+        const circle = document.querySelector(".circle");
+
+        if(circle){
+            const grados = Math.round(indicador * 3.6);
+            circle.style.background =
+                `conic-gradient(#FFE000 0deg,#FFE000 ${grados}deg,#E6EDF8 ${grados}deg)`;
+        }
+    }
+
+    function actualizarDashboard(){
+        actualizarKPIs();
+
+        barras(
+            "graficoResultado",
+            top(conteo(datosFiltrados.map(function(row){
+                return etiqueta(row[C.calidad]);
+            })),8),
+            datosFiltrados.length
+        );
+
+        const conocimiento = [
+            ["Conoce trámites", datosFiltrados.filter(function(row){ return esSi(row[C.conoceTramites]); }).length],
+            ["Ciudadano conoce trámites", datosFiltrados.filter(function(row){ return esSi(row[C.ciudadanoConoce]); }).length],
+            ["Identifica ventanilla", datosFiltrados.filter(function(row){ return esSi(row[C.identificaVentanilla]); }).length],
+            ["Recibió capacitación", datosFiltrados.filter(function(row){ return esSi(row[C.capacitacion]); }).length],
+            ["Recibió incentivos", datosFiltrados.filter(function(row){ return esSi(row[C.incentivos]); }).length]
+        ];
+
+        barras("graficoConocimiento", conocimiento, datosFiltrados.length);
+
+        barras(
+            "rankingAreas",
+            top(conteo(datosFiltrados.map(function(row){
+                return etiqueta(row[C.sede]);
+            })),10),
+            datosFiltrados.length
+        );
+
+        barras(
+            "rankingCargos",
+            top(conteo(datosFiltrados.map(function(row){
+                return etiqueta(row[C.cargo]);
+            })),10),
+            datosFiltrados.length
+        );
+
+        const canales = [];
+
+        datosFiltrados.forEach(function(row){
+            partir(row[C.canal]).forEach(function(x){
+                canales.push(x);
+            });
+        });
+
+        barras("canalesAtencion", top(conteo(canales),10), datosFiltrados.length);
+
+        const obstaculos = [];
+
+        datosFiltrados.forEach(function(row){
+            partir(row[C.obstaculos]).forEach(function(x){
+                obstaculos.push(x);
+            });
+        });
+
+        barras("capacidadOperativa", top(conteo(obstaculos),10), datosFiltrados.length);
+
+        barrasPromedio("condicionesServicio", CALIFICACIONES, datosFiltrados);
+
+        const diferencialItems = DIFERENCIAL.map(function(columna){
+            return [
+                columna,
+                datosFiltrados.filter(function(row){
+                    return esSi(row[columna]);
+                }).length
+            ];
+        });
+
+        barras("semaforoResultados", diferencialItems, datosFiltrados.length);
+
+        const riesgos = CALIFICACIONES.map(function(columna){
+            let suma = 0;
+            let total = 0;
+
+            datosFiltrados.forEach(function(row){
+                const n = numero(row[columna]);
+
+                if(n !== null){
+                    suma += n;
+                    total++;
+                }
+            });
+
+            const promedio = total ? suma / total : 0;
+
+            return {
+                columna: columna,
+                promedio: promedio
+            };
+        })
+        .filter(function(x){
+            return x.promedio > 0;
+        })
+        .sort(function(a,b){
+            return a.promedio - b.promedio;
+        })
+        .slice(0,10);
+
+        const tablaRiesgos = document.getElementById("tablaRiesgos");
+
+        if(tablaRiesgos){
+            tablaRiesgos.innerHTML = riesgos.map(function(item){
+                return `
+                    <tr>
+                        <td style="padding:12px;border-bottom:1px solid #DCE5F2;">${item.columna}</td>
+                        <td style="padding:12px;border-bottom:1px solid #DCE5F2;">${item.promedio.toFixed(1)} / 5</td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        const comentarios = [];
+
+        datosFiltrados.forEach(function(row){
+            [
+                C.canalesCuales,
+                C.tiempoDescripcion,
+                C.obstaculos,
+                C.mejoraPunto,
+                C.mejoraCiudadano,
+                C.rutasVBG
+            ].forEach(function(columna){
+                const texto = limpiar(row[columna]);
+
+                if(texto.length > 15){
+                    comentarios.push(texto);
+                }
+            });
+        });
+
+        const observaciones = document.getElementById("observaciones");
+
+        if(observaciones){
+            observaciones.innerHTML = comentarios.slice(0,20).map(function(texto){
+                return `
+                    <div style="
+                        padding:15px;
+                        border:1px solid #DCE5F2;
+                        border-radius:15px;
+                        margin-bottom:10px;
+                        color:#4D5F80;
+                        line-height:1.5;
+                    ">
+                        ${texto}
+                    </div>
+                `;
+            }).join("");
+        }
+
+        const indicador = Math.round((promedioGeneral(datosFiltrados) / 5) * 100);
+        const capacitados = porcentaje(datosFiltrados.filter(function(row){ return esSi(row[C.capacitacion]); }).length, datosFiltrados.length);
+        const noCompetencia = porcentaje(datosFiltrados.filter(function(row){ return esSi(row[C.noCompetencia]); }).length, datosFiltrados.length);
+
+        const insight1 = document.getElementById("insight1");
+        const insight2 = document.getElementById("insight2");
+        const insight3 = document.getElementById("insight3");
+
+        if(insight1){
+            insight1.innerHTML =
+                `<p style="color:#61779D;line-height:1.6;">El resultado general del servicio, calculado sobre las calificaciones operativas, es de <strong>${indicador}%</strong>.</p>`;
+        }
+
+        if(insight2){
+            insight2.innerHTML =
+                `<p style="color:#61779D;line-height:1.6;">El <strong>${capacitados}%</strong> de los servidores indica haber recibido capacitación o sensibilización en servicio al ciudadano.</p>`;
+        }
+
+        if(insight3){
+            insight3.innerHTML =
+                `<p style="color:#61779D;line-height:1.6;">El <strong>${noCompetencia}%</strong> reporta recibir ciudadanos con solicitudes que no son competencia de la entidad.</p>`;
+        }
+    }
+
+    function inicializarFiltros(){
+        llenarSelect("filtroArea", valoresUnicos(datosOriginales,C.sede), "Todas las áreas");
+        llenarSelect("filtroCargo", valoresUnicos(datosOriginales,C.cargo), "Todos los cargos");
+        llenarSelect("filtroSede", valoresUnicos(datosOriginales,C.sede), "Todas las sedes");
+
+        const filtroArea = document.getElementById("filtroArea");
+        const filtroCargo = document.getElementById("filtroCargo");
+        const filtroSede = document.getElementById("filtroSede");
+        const textoBusqueda = document.getElementById("textoBusqueda");
+
+        if(filtroArea) filtroArea.addEventListener("change", aplicarFiltros);
+        if(filtroCargo) filtroCargo.addEventListener("change", aplicarFiltros);
+        if(filtroSede) filtroSede.addEventListener("change", aplicarFiltros);
+        if(textoBusqueda) textoBusqueda.addEventListener("input", aplicarFiltros);
+    }
+
+    function validarXLSX(buffer){
+        const bytes = new Uint8Array(buffer.slice(0,4));
+        return bytes[0] === 0x50 && bytes[1] === 0x4B;
+    }
+
+    async function cargarExcel(){
+        if(estado){
+            estado.innerHTML = "Script iniciado. Buscando archivo Excel...";
+        }
+
+        if(typeof XLSX === "undefined"){
+            if(estado){
+                estado.innerHTML = "ERROR: La librería XLSX no está cargada. Revisa la línea del CDN en el head.";
+            }
+            return;
+        }
+
+        let ultimoError = "";
+
+        for(const url of EXCEL_URLS){
+            try{
+                if(estado){
+                    estado.innerHTML = "Probando archivo:<br>" + url;
+                }
+
+                const respuesta = await fetch(url + "?v=" + Date.now(), {
+                    cache: "no-store"
+                });
+
+                if(!respuesta.ok){
+                    ultimoError = url + " - HTTP " + respuesta.status;
+                    continue;
+                }
+
+                const buffer = await respuesta.arrayBuffer();
+
+                if(!validarXLSX(buffer)){
+                    ultimoError = url + " - La respuesta no es un archivo XLSX.";
+                    continue;
+                }
+
+                const libro = XLSX.read(buffer, {
+                    type: "array"
+                });
+
+                const hoja = libro.Sheets[libro.SheetNames[0]];
+
+                datosOriginales = XLSX.utils.sheet_to_json(hoja, {
+                    defval: ""
+                });
+
+                if(!datosOriginales.length){
+                    ultimoError = url + " - El Excel no contiene registros.";
+                    continue;
+                }
+
+                datosFiltrados = [...datosOriginales];
+
+                inicializarFiltros();
+                actualizarDashboard();
+
+                if(estado){
+                    estado.innerHTML = "Datos cargados correctamente: " + datosOriginales.length + " registros";
+                }
+
+                return;
+
+            }catch(error){
+                ultimoError = url + " - " + error.message;
+            }
+        }
+
+        if(estado){
+            estado.innerHTML = "ERROR CARGANDO EXCEL:<br>" + ultimoError;
+        }
+    }
+
+    window.addEventListener("DOMContentLoaded", cargarExcel);
 
 </script>
 
