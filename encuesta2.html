@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Encuesta Ciudadanos</title>
+
+<script>https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js</script>
+
+<style>
+
+:root{
+    --azul:#003A8C;
+    --azulOscuro:#001F5B;
+    --amarillo:#FFE000;
+    --amarillo2:#FFC400;
+    --rojo:#D81E05;
+    --verde:#0E9F6E;
+    --gris:#F5F7FB;
+    --gris2:#E4EAF7;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Segoe UI',sans-serif;
+    background:#ffffff;
+    color:#003A8C;
+}
+
+.container{
+    width:95%;
+    max-width:1500px;
+    margin:auto;
+    padding-bottom:50px;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:25px 0;
+}
+
+.btn-back{
+    text-decoration:none;
+    color:#003A8C;
+    font-weight:700;
+    border:1px solid #E4EAF7;
+    padding:12px 18px;
+    border-radius:999px;
+    transition:.3s;
+}
+
+.btn-back:hover{
+    border-color:#FFE000;
+}
+
+.hero{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:25px;
+    margin-bottom:25px;
+}
+
+.card{
+    background:white;
+    border-radius:30px;
+    border:1px solid #E4EAF7;
+    box-shadow:
+    0 15px 35px rgba(0,58,140,.08);
+}
+
+.hero-content{
+    padding:40px;
+}
+
+.hero h1{
+    font-size:4rem;
+    line-height:1;
+    color:#001F5B;
+    margin-bottom:20px;
+}
+
+.hero p{
+    color:#6D7C9B;
+    font-size:1.1rem;
+    line-height:1.6;
+}
+
+.red-line{
+    width:220px;
+    height:7px;
+    background:#D81E05;
+    border-radius:999px;
+    margin-top:25px;
+}
+
+.status{
+    margin-top:25px;
+    padding:18px;
+    border-radius:18px;
+    background:#FFF9DA;
+    border:1px solid #F5D748;
+    font-weight:700;
+}
+
+.score-card{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:30px;
+}
+
+.circle{
+    width:240px;
+    height:240px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+    conic-gradient(
+        #FFE000 0deg,
+        #FFE000 0deg,
+        #E7EEF8 0deg
+    );
+    position:relative;
+}
+
+.circle::before{
+    content:"";
+    position:absolute;
+    width:170px;
+    height:170px;
+    border-radius:50%;
+    background:white;
+}
+
+.circle span{
+    position:relative;
+    font-size:4rem;
+    font-weight:900;
+}
+
+.score-card h2{
+    margin-top:20px;
+    color:#001F5B;
+}
+
+.score-card p{
+    color:#6D7C9B;
+    text-align:center;
+}
+
+.metrics{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+    margin-bottom:25px;
+}
+
+.metric{
+    padding:25px;
+}
+
+.metric-number{
+    font-size:3rem;
+    font-weight:900;
+    color:#001F5B;
+}
+
+.metric-label{
+    color:#6D7C9B;
+    margin-top:8px;
+}
+
+.filters{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    padding:25px;
+    margin-bottom:25px;
+}
+
+.filters select,
+.filters input{
+    width:100%;
+    padding:14px;
+    border-radius:15px;
+    border:1px solid #E4EAF7;
+    outline:none;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    gap:20px;
+}
+
+.panel-6{
+    grid-column:span 6;
+    padding:25px;
+}
+
+.panel-4{
+    grid-column:span 4;
+    padding:25px;
+}
+
+.panel-12{
+    grid-column:span 12;
+    padding:25px;
+}
+
+.panel-title{
+    font-size:1.4rem;
+    font-weight:900;
+    color:#001F5B;
+    margin-bottom:20px;
+}
+
+.bar{
+    margin-bottom:18px;
+}
+
+.bar-label{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:6px;
+    font-size:.9rem;
+}
+
+.bar-track{
+    height:18px;
+    border-radius:999px;
+    background:#E8EEF8;
+}
+
+.bar-fill{
+    height:18px;
+    border-radius:999px;
+    background:
+    linear-gradient(
+        90deg,
+        #FFE000,
+        #FFC400
+    );
+}
+
+@media(max-width:900px){
+
+    .hero{
+        grid-template-columns:1fr;
+    }
+
+    .metrics{
+        grid-template-columns:1fr;
+    }
+
+    .filters{
+        grid-template-columns:1fr;
+    }
+
+    .panel-4,
+    .panel-6,
+    .panel-12{
+        grid-column:span 12;
+    }
+
+    .hero h1{
+        font-size:2.8rem;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="topbar">
+
+<a href="index.html" class="btn-back">
+← Volver al menú
+</a>
+
+</div>
+
+<section class="hero">
+
+<div class="card hero-content">
+
+<div style="
+font-size:13px;
+font-weight:900;
+letter-spacing:2px;
+">
+ENCUESTA 2 · DASHBOARD EJECUTIVO
+</div>
+
+<h1>
+Encuesta de Ciudadanos
+</h1>
+
+<p>
+Análisis integral de satisfacción ciudadana,
+atención recibida, infraestructura,
+servidores públicos, canales,
+tiempos de atención y experiencia del usuario.
+</p>
+
+<div class="red-line"></div>
+
+<div
+id="estadoCarga"
+class="status">
+Cargando datos...
+</div>
+
+</div>
+
+<div class="card score-card">
+
+<div class="circle">
+<span id="indicadorGeneral">
+0%
+</span>
+</div>
+
+<h2>
+Nivel de satisfacción
+</h2>
+
+<p>
+Resultado consolidado de la encuesta
+</p>
+
+</div>
+
+</section>
+
+<!-- KPI PRINCIPALES -->
+
+<section class="metrics">
+
+    <div class="card metric">
+        <div id="totalEncuestas" class="metric-number">
+            0
+        </div>
+        <div class="metric-label">
+            Encuestas
+        </div>
+    </div>
+
+    <div class="card metric">
+        <div id="totalSedes" class="metric-number">
+            0
+        </div>
+        <div class="metric-label">
+            Sedes
+        </div>
+    </div>
+
+    <div class="card metric">
+        <div id="promedioGeneral" class="metric-number">
+            0%
+        </div>
+        <div class="metric-label">
+            Satisfacción
+        </div>
+    </div>
+
+    <div class="card metric">
+        <div id="tiempoPromedio" class="metric-number">
+            0
+        </div>
+        <div class="metric-label">
+            Tiempo espera
+        </div>
+    </div>
+
+</section>
+
+<!-- FILTROS -->
+
+<div class="card filters">
+
+    <select id="filtroCiudad">
+        <option value="">
+            Todas las ciudades
+        </option>
+    </select>
+
+    <select id="filtroSede">
+        <option value="">
+            Todas las sedes
+        </option>
+    </select>
+
+    <select id="filtroServicio">
+        <option value="">
+            Todos los servicios
+        </option>
+    </select>
+
+    <input
+        id="busquedaTexto"
+        type="text"
+        placeholder="Buscar comentarios..."
+    >
+
+</div>
+
+<!-- GRID PRINCIPAL -->
+
+<section class="grid">
+
+    <!-- CALIFICACIÓN GENERAL -->
+
+    <div class="card panel-6">
+
+        <div class="panel-title">
+            Calificación General del Servicio
+        </div>
+
+        <div id="graficoCalificacion">
+
+        </div>
+
+    </div>
+
+    <!-- EXPECTATIVAS -->
+
+    <div class="card panel-6">
+
+        <div class="panel-title">
+            Cumplimiento de Expectativas
+        </div>
+
+        <div id="graficoExpectativas">
+
+        </div>
+
+    </div>
+
+    <!-- SERVICIOS MÁS UTILIZADOS -->
+
+    <div class="card panel-6">
+
+        <div class="panel-title">
+            Servicios Más Solicitados
+        </div>
+
+        <div id="rankingServicios">
+
+        </div>
+
+    </div>
+
+    <!-- SEDES -->
+
+    <div class="card panel-6">
+
+        <div class="panel-title">
+            Ranking de Sedes
+        </div>
+
+        <div id="rankingSedes">
+
+        </div>
+
+    </div>
+
+    <!-- INFRAESTRUCTURA -->
+
+    <div class="card panel-12">
+
+        <div class="panel-title">
+            Infraestructura y Condiciones del Punto de Atención
+        </div>
+
+        <div id="infraestructura">
+
+        </div>
+
+    </div>
+
+    <!-- SERVIDORES PUBLICOS -->
+
+    <div class="card panel-12">
+
+        <div class="panel-title">
+            Evaluación de los Servidores Públicos
+        </div>
+
+        <div id="servidoresPublicos">
+
+        </div>
+
+    </div>
+
+    <!-- TIEMPOS -->
+
+    <div class="card panel-6">
+
+        <div class="panel-title">
+            Tiempo de Espera
+        </div>
+
+        <div id="tiemposEspera">
+
+        </div>
+
+    </div>
+
+    <!-- CANALES -->
+
+    <div class="card panel-6">
+
+        <div class="panel-title">
+            Canales Preferidos
+        </div>
+
+        <div id="canalesPreferidos">
+
+        </div>
+
+    </div>
+
+    <!-- DEMOGRAFIA -->
+
+    <div class="card panel-12">
+
+        <div class="panel-title">
+            Perfil de los Ciudadanos Encuestados
+        </div>
+
+        <div id="demografia">
+
+        </div>
+
+    </div>
+
+    <!-- OPORTUNIDADES -->
+
+    <div class="card panel-12">
+
+        <div class="panel-title">
+            Principales Oportunidades de Mejora
+        </div>
+
+        <table class="risk-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Aspecto
+                    </th>
+
+                    <th>
+                        Calificación
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="tablaMejoras">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- INSIGHTS -->
+
+    <div class="card panel-4">
+
+        <div class="panel-title">
+            Insight 1
+        </div>
+
+        <div id="insight1">
+
+        </div>
+
+    </div>
+
+    <div class="card panel-4">
+
+        <div class="panel-title">
+            Insight 2
+        </div>
+
+        <div id="insight2">
+
+        </div>
+
+    </div>
+
+    <div class="card panel-4">
+
+        <div class="panel-title">
+            Insight 3
+        </div>
+
+        <div id="insight3">
+
+        </div>
+
+    </div>
+
+    <!-- OBSERVACIONES -->
+
+    <div class="card panel-12">
+
+        <div class="panel-title">
+            Comentarios y Recomendaciones Ciudadanas
+        </div>
+
+        <div id="comentarios">
+
+        </div>
+
+    </div>
+
+</section>
+
+<script>
+
+let datosOriginales = [];
+let datosFiltrados = [];
+
+const ARCHIVOS_EXCEL = [
+    "./Instrumento%202%20-%20Encuesta%20Ciudadanos(1-116).xlsx",
+    "./Instrumento%202%20-%20Encuesta%20Ciudadanos%281-116%29.xlsx",
+    "./Instrumento 2 - Encuesta Ciudadanos(1-116).xlsx",
+    "./Instrumento%202%20-%20Encuesta%20Ciudadanos.xlsx",
+    "./Instrumento 2 - Encuesta Ciudadanos.xlsx"
+];
+
+const C = {
+    ciudad: "Ciudad de la Sede",
+    sede: "Nombre de la Sede",
+    servicios: "Seleccione el o los servicios por el cual vino al punto",
+    calidad: "¿Cómo califica la calidad de la prestación del servicio ofrecido por la entidad?",
+    expectativa: "El servicio recibido el día de hoy:",
+    gestion: "¿Qué tipo de gestión vino a realizar hoy?",
+    canal: "¿Cuál de los siguientes canales preferiría usar?",
+    espera: "¿Cuánto tiempo aproximadamente tuvo que esperar para ser atendido? Indique el tiempo en minutos",
+    atencion: "¿Cuánto tiempo duró la atención?",
+    efectiva: "¿La entidad le dio respuesta efectiva a su requerimiento?",
+    varias: "¿Tuvo que venir varias veces para solucionar su requerimiento?",
+    edad: "Edad",
+    sexo: "Sexo de nacimiento",
+    educacion: "Último Nivel educativo alcanzado",
+    discapacidad: "Se encuentra ud en condición de discapacidad?",
+    grupo: "Se autoreconoce como perteneciente a un grupo étnico",
+    victima: "Se considera o ha sido víctima del conflicto armado en Colombia?",
+    mejoraPunto: "Teniendo en cuenta la calificación anterior ¿Qué le mejoraría a este punto de servicio?",
+    mejoraServidor: "Teniendo en cuenta la calificación anterior ¿Qué mejoraría a la atención prestada por los servidores?"
+};
+
+const infraestructuraCols = [
+    "Señalización interna",
+    "Señalización externa",
+    "Espacio adecuado de salas de espera",
+    "Espacio adecuado en oficinas/módulos de atención",
+    "Limpieza",
+    "Orden",
+    "Cantidad de ventanillas/modulos"
+];
+
+const servidorCols = [
+    "Servidor público que lo atendió: Presentación personal",
+    "Servidor público que lo atendió: Uso adecuado de distitintivos (carné, chaqueta institucional)",
+    "Servidor público que lo atendió: Amabilidad",
+    "Servidor público que lo atendió: Manejo de la información (precisa, clara, completa)",
+    "Servidor público que lo atendió: Lenguaje claro y sencillo",
+    "Servidor público que lo atendió: Trato recibido por el personal de recepción, orientación y/o asiganación de turnos",
+    "Servidor público que lo atendió: Trato recibido por el personal de vigilancia",
+    "Servidor público que lo atendió: Trato recibido por el personal de servicios generales"
+];
+
+function limpiar(valor){
+    if(valor === null || valor === undefined){
+        return "";
+    }
+
+    return String(valor).trim();
+}
+
+function normalizar(valor){
+    return limpiar(valor)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g,"")
+        .toLowerCase();
+}
+
+function etiqueta(valor){
+    return limpiar(valor)
+        .replace(/^\d+\.?\s*/,"")
+        .replace(/^Opción\s*\d+:\s*/i,"")
+        .replace(/\s+*g," ");
+}
+
+function numeroCalifica*ion(valor){
+    const texto = limp*ar(valor);
+
+    if(texto.startsWit*("5")){
+        return 5;
+    }
+
+ *  if(texto.startsWith("4")){
+     *  return 4;
+    }
+
+    if(texto.st*rtsWith("3")){
+        return 3;
+ *  }
+
+    if(texto.startsWith("2"))*
+        return 2;
+    }
+
+    if(t*xto.startsWith("1")){
+        retu*n 1;
+    }
+
+    return null;
+}
+
+function esSi(valor){
+    const texto = normalizar(valor);
+    return texto === "si" || texto.startsWith("1 si");
+}
+
+function esNo(valor){
+    const texto = normalizar(valor);
+    return texto === "no" || texto.startsWith("2 no");
+}
+
+function porcentaje(valor,total){
+    if(!total){
+        return 0;
+    }
+
+    return Math.round((valor * 100) / total);
+}
+
+function dividirServicios(valor){
+    return limpiar(valor)
+        .split(";")
+        .map(item => item.replace(/^\d+\.?\s*/,"").trim())
+        .filter(item => item.length > 0);
+}
+
+function conteo(lista){
+    const mapa = {};
+
+    lista.forEach(item => {
+        const clave = item || "Sin dato";
+        mapa[clave] = (mapa[clave] || 0) + 1;
+    });
+
+    return mapa;
+}
+
+function top(mapa,limite=10){
+    return Object.entries(mapa)
+        .sort((a,b) => b[1] - a[1])
+        .slice(0,limite);
+}
+
+function valoresUnicos(data,columna){
+    return [
+        ...new Set(
+            data
+                .map(fila => etiqueta(fila[columna]))
+                .filter(valor => valor.length > 0)
+        )
+    ].sort();
+}
+
+function llenarSelect(id,valores,texto){
+    const select = document.getElementById(id);
+
+    if(!select){
+        return;
+    }
+
+    const actual = select.value;
+
+    let html = `<option value="">${texto}</option>`;
+
+    valores.forEach(valor => {
+        const seguro = String(valor).replace(/"/g,"&quot;");
+        html += `<option value="${seguro}">${valor}</option>`;
+    });
+
+    select.innerHTML = html;
+
+    if(valores.includes(actual)){
+        select.value = actual;
+    }
+}
+
+function aplicarFiltros(){
+    const ciudad = document.getElementById("filtroCiudad").value;
+    const sede = document.getElementById("filtroSede").value;
+    const servicio = document.getElementById("filtroServicio").value;
+    const busqueda = document.getElementById("busquedaTexto").value.toLowerCase();
+
+    datosFiltrados = datosOriginales.filter(fila => {
+
+        const serviciosFila = dividirServicios(fila[C.servicios]);
+
+        const okCiudad =
+            !ciudad ||
+            etiqueta(fila[C.ciudad]) === ciudad;
+
+        const okSede =
+            !sede ||
+            etiqueta(fila[C.sede]) === sede;
+
+        const okServicio =
+            !servicio ||
+            serviciosFila.includes(servicio);
+
+        const okBusqueda =
+            !busqueda ||
+            Object.values(fila).join(" ").toLowerCase().includes(busqueda);
+
+        return okCiudad && okSede && okServicio && okBusqueda;
+    });
+
+    actualizarDashboard();
+}
+
+function promedioColumna(data,columna){
+    const valores = data
+        .map(fila => numeroCalificacion(fila[columna]))
+        .filter(valor => valor !== null);
+
+    if(!valores.length){
+        return 0;
+    }
+
+    return valores.reduce((a,b) => a + b, 0) / valores.length;
+}
+
+function promedioColumnas(data,columnas){
+    const valores = [];
+
+    columnas.forEach(columna => {
+        data.forEach(fila => {
+            const valor = numeroCalificacion(fila[columna]);
+
+            if(valor !== null){
+                valores.push(valor);
+            }
+        });
+    });
+
+    if(!valores.length){
+        return 0;
+    }
+
+    return valores.reduce((a,b) => a + b, 0) / valores.length;
+}
+
+function dibujarBarras(id,items,total){
+    const contenedor = document.getElementById(id);
+
+    if(!contenedor){
+        return;
+    }
+
+    if(!items.length){
+        contenedor.innerHTML = `
+            <p style="color:#6D7C9B;">
+                Sin datos para este filtro.
+            </p>
+        `;
+        return;
+    }
+
+    const maximo = Math.max(...items.map(item => item[1]),1);
+
+    contenedor.innerHTML = items.map(item => {
+
+        const nombre = item[0];
+        const valor = item[1];
+        const ancho = Math.max(4,(valor / maximo) * 100);
+        const pct = porcentaje(valor,total);
+
+        return `
+            <div class="bar">
+
+                <div class="bar-label">
+                    <span>${nombre}</span>
+                    <strong>${valor} · ${pct}%</strong>
+                </div>
+
+                <div class="bar-track">
+                    <div class="bar-fill" style="width:${ancho}%"></div>
+                </div>
+
+            </div>
+        `;
+    }).join("");
+}
+
+function dibujarPromedios(id,columnas,data){
+    const contenedor = document.getElementById(id);
+
+    if(!contenedor){
+        return;
+    }
+
+    const items = columnas.map(columna => {
+        const promedio = promedioColumna(data,columna);
+        const nombre = columna
+            .replace("Servidor público que lo atendió:","")
+            .trim();
+
+        return {
+            nombre,
+            promedio
+        };
+    });
+
+    contenedor.innerHTML = items.map(item => {
+
+        const pct = Math.round((item.promedio / 5) * 100);
+
+        let color = "#D81E05";
+
+        if(pct >= 80){
+            color = "#0E9F6E";
+        }else if(pct >= 60){
+            color = "#FFC400";
+        }
+
+        return `
+            <div class="bar">
+
+                <div class="bar-label">
+                    <span>${item.nombre}</span>
+                    <strong>${item.promedio.toFixed(1)} / 5</strong>
+                </div>
+
+                <div class="bar-track">
+                    <div
+                        class="bar-fill"
+                        style="
+                            width:${pct}%;
+                            background:${color};
+                        "
+                    ></div>
+                </div>
+
+            </div>
+        `;
+    }).join("");
+}
+
+function actualizarKPIs(data){
+    const total = data.length;
+
+    const sedes = valoresUnicos(data,C.sede).length;
+
+    const calificacion = promedioColumna(data,C.calidad);
+    const satisfaccion = Math.round((calificacion / 5) * 100);
+
+    const esperaMapa = conteo(data.map(fila => etiqueta(fila[C.espera])));
+    const esperaTop = top(esperaMapa,1);
+    const esperaTexto = esperaTop.length ? esperaTop[0][0] : "Sin dato";
+
+    document.getElementById("totalEncuestas").textContent = total;
+    document.getElementById("totalSedes").textContent = sedes;
+    document.getElementById("promedioGeneral").textContent = satisfaccion + "%";
+    document.getElementById("tiempoPromedio").textContent = esperaTexto;
+
+    document.getElementById("indicadorGeneral").textContent = satisfaccion + "%";
+
+    const grados = Math.round((satisfaccion / 100) * 360);
+
+    document.querySelector(".circle").style.background =
+        `conic-gradient(#FFE000 0deg, #FFE000 ${grados}deg, #E7EEF8 ${grados}deg)`;
+}
+
+function pintarCalificacion(data){
+    const mapa = conteo(data.map(fila => etiqueta(fila[C.calidad])));
+    dibujarBarras("graficoCalificacion",top(mapa,8),data.length);
+}
+
+function pintarExpectativas(data){
+    const mapa = conteo(data.map(fila => etiqueta(fila[C.expectativa])));
+    dibujarBarras("graficoExpectativas",top(mapa,8),data.length);
+}
+
+function pintarServicios(data){
+    const servicios = [];
+
+    data.forEach(fila => {
+        dividirServicios(fila[C.servicios]).forEach(servicio => {
+            servicios.push(servicio);
+        });
+    });
+
+    dibujarBarras("rankingServicios",top(conteo(servicios),10),data.length);
+}
+
+function pintarSedes(data){
+    const sedes = data.map(fila => etiqueta(fila[C.sede]) || "Sin sede");
+    dibujarBarras("rankingSedes",top(conteo(sedes),10),data.length);
+}
+
+function pintarTiempos(data){
+    const mapa = conteo(data.map(fila => etiqueta(fila[C.espera])));
+    dibujarBarras("tiemposEspera",top(mapa,8),data.length);
+}
+
+function pintarCanales(data){
+    const mapa = conteo(data.map(fila => etiqueta(fila[C.canal])));
+    dibujarBarras("canalesPreferidos",top(mapa,8),data.length);
+}
+
+function pintarDemografia(data){
+    const edades = conteo(data.map(fila => etiqueta(fila[C.edad])));
+    const sexo = conteo(data.map(fila => etiqueta(fila[C.sexo])));
+    const educacion = conteo(data.map(fila => etiqueta(fila[C.educacion])));
+
+    document.getElementById("demografia").innerHTML = `
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+
+            <div>
+                <h4 style="margin-bottom:15px;color:#001F5B;">Edad</h4>
+                <div id="demoEdad"></div>
+            </div>
+
+            <div>
+                <h4 style="margin-bottom:15px;color:#001F5B;">Sexo de nacimiento</h4>
+                <div id="demoSexo"></div>
+            </div>
+
+            <div>
+                <h4 style="margin-bottom:15px;color:#001F5B;">Nivel educativo</h4>
+                <div id="demoEducacion"></div>
+            </div>
+
+        </div>
+    `;
+
+    dibujarBarras("demoEdad",top(edades,6),data.length);
+    dibujarBarras("demoSexo",top(sexo,6),data.length);
+    dibujarBarras("demoEducacion",top(educacion,6),data.length);
+}
+
+function pintarMejoras(data){
+    const aspectos = [
+        ...infraestructuraCols,
+        ...servidorCols,
+        "Servicio recibido: Claridad de los requisitos",
+        "Servicio recibido: Respeto por el turno de atención",
+        "Servicio recibido: Cumplimiento horarios de atención"
+    ];
+
+    const resultados = aspectos.map(columna => {
+        const promedio = promedioColumna(data,columna);
+        return {
+            columna,
+            promedio
+        };
+    })
+    .filter(item => item.promedio > 0)
+    .sort((a,b) => a.promedio - b.promedio)
+    .slice(0,12);
+
+    document.getElementById("tablaMejoras").innerHTML =
+        resultados.map(item => `
+            <tr>
+                <td>${item.columna}</td>
+                <td>${item.promedio.toFixed(1)} / 5</td>
+            </tr>
+        `).join("");
+}
+
+function pintarComentarios(data){
+    const comentarios = [];
+
+    data.forEach(fila => {
+        [
+            C.mejoraPunto,
+            C.mejoraServidor,
+            "Si contestó afirmativamente la pregunta anterior, indique cuales.",
+            "Si su respuesta anterior fue negativa, por favor indique porque."
+        ].forEach(columna => {
+            const texto = limpiar(fila[columna]);
+
+            if(texto.length > 15){
+                comentarios.push(texto);
+            }
+        });
+    });
+
+    const seleccion = comentarios.slice(0,12);
+
+    if(!seleccion.length){
+        document.getElementById("comentarios").innerHTML =
+            "<p style='color:#6D7C9B;'>No hay comentarios disponibles para este filtro.</p>";
+        return;
+    }
+
+    document.getElementById("comentarios").innerHTML =
+        seleccion.map(texto => `
+            <div style="
+                padding:16px;
+                border:1px solid #E4EAF7;
+                border-radius:18px;
+                margin-bottom:12px;
+                color:#4D5F80;
+                line-height:1.5;
+            ">
+                ${texto}
+            </div>
+        `).join("");
+}
+
+function pintarInsights(data){
+    const total = data.length;
+
+    const calificacion = promedioColumna(data,C.calidad);
+    const satisfaccion = Math.round((calificacion / 5) * 100);
+
+    const respuestaEfectiva = data.filter(fila => esSi(fila[C.efectiva])).length;
+    const pctRespuesta = porcentaje(respuestaEfectiva,total);
+
+    const variasVeces = data.filter(fila => esSi(fila[C.varias])).length;
+    const pctVarias = porcentaje(variasVeces,total);
+
+    document.getElementById("insight1").innerHTML = `
+        <p style="color:#6D7C9B;line-height:1.6;">
+            La satisfacción consolidada del filtro activo es de
+            <strong>${satisfaccion}%</strong>, calculada con la calificación general del servicio.
+        </p>
+    `;
+
+    document.getElementById("insight2").innerHTML = `
+        <p style="color:#6D7C9B;line-height:1.6;">
+            El <strong>${pctRespuesta}%</strong> de los registros indica que la entidad dio respuesta efectiva al requerimiento ciudadano.
+        </p>
+    `;
+
+    document.getElementById("insight3").innerHTML = `
+        <p style="color:#6D7C9B;line-height:1.6;">
+            El <strong>${pctVarias}%</strong> de los ciudadanos tuvo que acudir varias veces, lo que permite identificar oportunidades de mejora en resolución en primer contacto.
+        </p>
+    `;
+}
+
+function actualizarDashboard(){
+    const data = datosFiltrados;
+
+    actualizarKPIs(data);
+    pintarCalificacion(data);
+    pintarExpectativas(data);
+    pintarServicios(data);
+    pintarSedes(data);
+    dibujarPromedios("infraestructura",infraestructuraCols,data);
+    dibujarPromedios("servidoresPublicos",servidorCols,data);
+    pintarTiempos(data);
+    pintarCanales(data);
+    pintarDemografia(data);
+    pintarMejoras(data);
+    pintarComentarios(data);
+    pintarInsights(data);
+}
+
+function inicializarFiltros(){
+    llenarSelect(
+        "filtroCiudad",
+        valoresUnicos(datosOriginales,C.ciudad),
+        "Todas las ciudades"
+    );
+
+    llenarSelect(
+        "filtroSede",
+        valoresUnicos(datosOriginales,C.sede),
+        "Todas las sedes"
+    );
+
+    const servicios = [];
+
+    datosOriginales.forEach(fila => {
+        dividirServicios(fila[C.servicios]).forEach(servicio => {
+            servicios.push(servicio);
+        });
+    });
+
+    llenarSelect(
+        "filtroServicio",
+        [...new Set(servicios)].sort(),
+        "Todos los servicios"
+    );
+
+    document.getElementById("filtroCiudad")
+        .addEventListener("change", aplicarFiltros);
+
+    document.getElementById("filtroSede")
+        .addEventListener("change", aplicarFiltros);
+
+    document.getElementById("filtroServicio")
+        .addEventListener("change", aplicarFiltros);
+
+    document.getElementById("busquedaTexto")
+        .addEventListener("input", aplicarFiltros);
+}
+
+async function cargarExcel(){
+    const estado = document.getElementById("estadoCarga");
+
+    if(estado){
+        estado.innerHTML = "Cargando datos...";
+    }
+
+    if(typeof XLSX === "undefined"){
+        estado.innerHTML =
+            "ERROR: La librería XLSX no cargó. Revisa la etiqueta script del CDN.";
+        return;
+    }
+
+    let ultimoError = "";
+
+    for(const archivo of ARCHIVOS_EXCEL){
+
+        try{
+
+            const respuesta = await fetch(
+                archivo + "?v=" + Date.now(),
+                {
+                    cache:"no-store"
+                }
+            );
+
+            if(!respuesta.ok){
+                ultimoError = archivo + " - HTTP " + respuesta.status;
+                continue;
+            }
+
+            const buffer = await respuesta.arrayBuffer();
+
+            const libro = XLSX.read(buffer,{
+                type:"array"
+            });
+
+            const hoja = libro.Sheets[libro.SheetNames[0]];
+
+            datosOriginales = XLSX.utils.sheet_to_json(hoja,{
+                defval:""
+            });
+
+            datosFiltrados = [...datosOriginales];
+
+            inicializarFiltros();
+            actualizarDashboard();
+
+            estado.innerHTML =
+                "Datos cargados automáticamente: " +
+                datosOriginales.length +
+                " registros";
+
+            return;
+
+        }catch(error){
+            ultimoError = error.message;
+        }
+    }
+
+    estado.innerHTML =
+        "ERROR CARGANDO EXCEL: " + ultimoError;
+}
+
+window.addEventListener("DOMContentLoaded", cargarExcel);
+
+</script>
+</div>
+</body>
+</html>
