@@ -8,7 +8,7 @@
 
 <title>Encuesta Ciudadanos</title>
 
-<script>https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js</script>
+<script> https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js </script>
 
 <style>
 
@@ -642,36 +642,46 @@ Resultado consolidado de la encuesta
 </section>
 
 <script>
-(function(){
+(function () {
 
     const estado = document.getElementById("estadoCarga");
 
-    window.onerror = function(mensaje, archivo, linea, columna, error){
-        if(estado){
+    if (estado) {
+        estado.innerHTML = "Script ejecutándose. Buscando Excel...";
+    }
+
+    window.onerror = function (mensaje, archivo, linea) {
+        if (estado) {
             estado.innerHTML =
                 "ERROR JAVASCRIPT:<br>" +
-                mensaje + "<br>Línea: " + linea;
+                mensaje +
+                "<br>Línea: " + linea;
         }
     };
 
     let datosOriginales = [];
     let datosFiltrados = [];
 
-    const NOMBRE_EXCEL_1 = "Instrumento 2 - Encuesta Ciudadanos(1-116).xlsx";
-    const NOMBRE_EXCEL_2 = "Instrumento 2 - Encuesta Ciudadanos.xlsx";
-
-    const ARCHIVOS_EXCEL = [
-        "./" + encodeURIComponent(NOMBRE_EXCEL_1),
-        "./" + NOMBRE_EXCEL_1,
-        "./Instrumento%202%20-%20Encuesta%20Ciudadanos(1-116).xlsx",
-        "./Instrumento%202%20-%20Encuesta%20Ciudadanos%281-116%29.xlsx",
-        "./" + encodeURIComponent(NOMBRE_EXCEL_2),
-        "./" + NOMBRE_EXCEL_2,
-        "./Instrumento%202%20-%20Encuesta%20Ciudadanos.xlsx",
-        "https://raw.githubusercontent.com/mejiamapola/encuesta-dashboard/main/" + encodeURIComponent(NOMBRE_EXCEL_1),
-        "https://raw.githubusercontent.com/mejiamapola/encuesta-dashboard/main/Instrumento%202%20-%20Encuesta%20Ciudadanos%281-116%29.xlsx",
-        "https://raw.githubusercontent.com/mejiamapola/encuesta-dashboard/main/" + encodeURIComponent(NOMBRE_EXCEL_2)
+    const NOMBRES_EXCEL = [
+        "Instrumento 2 - Encuesta Ciudadanos(1-116).xlsx",
+        "Instrumento 2 - Encuesta Ciudadanos.xlsx"
     ];
+
+    const ARCHIVOS_EXCEL = [];
+
+    NOMBRES_EXCEL.forEach(function(nombre){
+        ARCHIVOS_EXCEL.push("./" + encodeURIComponent(nombre));
+        ARCHIVOS_EXCEL.push("./" + nombre);
+    });
+
+    ARCHIVOS_EXCEL.push(
+        "https://raw.githubusercontent.com/mejiamapola/encuesta-dashboard/main/Instrumento%202%20-%20Encuesta%20Ciudadanos(1-116).xlsx",
+        "https://raw.githubusercontent.com/mejiamapola/encuesta-dashboard/main/Instrumento%202%20-%20Encuesta%20Ciudadanos%281-116%29.xlsx",
+        "https://raw.githubusercontent.com/mejiamapola/encuesta-dashboard/main/Instrumento%202%20-%20Encuesta%20Ciudadanos.xlsx",
+        "https://raw.githubusercontent.com/mejiamapola/encuesta-dashboard/master/Instrumento%202%20-%20Encuesta%20Ciudadanos(1-116).xlsx",
+        "https://raw.githubusercontent.com/mejiamapola/encuesta-dashboard/master/Instrumento%202%20-%20Encuesta%20Ciudadanos%281-116%29.xlsx",
+        "https://raw.githubusercontent.com/mejiamapola/encuesta-dashboard/master/Instrumento%202%20-%20Encuesta%20Ciudadanos.xlsx"
+    );
 
     const C = {
         ciudad: "Ciudad de la Sede",
@@ -713,92 +723,92 @@ Resultado consolidado de la encuesta
         "Servidor público que lo atendió: Trato recibido por el personal de servicios generales"
     ];
 
-    function cargarLibreriaXLSX(){
-        return new Promise(function(resolve,reject){
+    function cargarLibreriaXLSX() {
+        return new Promise(function(resolve, reject) {
 
-            if(window.XLSX){
+            if (window.XLSX) {
                 resolve();
                 return;
             }
 
             const script = document.createElement("script");
-
             script.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
 
-            script.onload = function(){
-                if(window.XLSX){
+            script.onload = function() {
+                if (window.XLSX) {
                     resolve();
-                }else{
+                } else {
                     reject(new Error("La librería XLSX se cargó, pero no quedó disponible."));
                 }
             };
 
-            script.onerror = function(){
-                reject(new Error("No se pudo cargar la librería XLSX desde CDN."));
+            script.onerror = function() {
+                reject(new Error("No se pudo cargar la librería XLSX."));
             };
 
             document.head.appendChild(script);
         });
     }
 
-    function limpiar(valor){
-        if(valor === null || valor === undefined){
+    function limpiar(valor) {
+        if (valor === null || valor === undefined) {
             return "";
         }
+
         return String(valor).trim();
     }
 
-    function normalizar(valor){
+    function normalizar(valor) {
         return limpiar(valor)
             .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g,"")
+            .replace(/[\u0300-\u036f]/g, "")
             .toLowerCase();
     }
 
-    function etiqueta(valor){
+    function etiqueta(valor) {
         return limpiar(valor)
-            .replace(/^\d+\.?\s*/,"")
-            .replace(/^Opción\s*\d+:\s*/i,"")
-            .replace(/\s+/g," ");
+            .replace(/^\d+\.?\s*/, "")
+            .replace(/^Opción\s*\d+:\s*/i, "")
+            .replace(/\s+/g, " ");
     }
 
-    function numeroCalificacion(valor){
+    function numeroCalificacion(valor) {
         const texto = limpiar(valor);
 
-        if(texto.startsWith("5")) return 5;
-        if(texto.startsWith("4")) return 4;
-        if(texto.startsWith("3")) return 3;
-        if(texto.startsWith("2")) return 2;
-        if(texto.startsWith("1")) return 1;
+        if (texto.startsWith("5")) return 5;
+        if (texto.startsWith("4")) return 4;
+        if (texto.startsWith("3")) return 3;
+        if (texto.startsWith("2")) return 2;
+        if (texto.startsWith("1")) return 1;
 
         return null;
     }
 
-    function esSi(valor){
+    function esSi(valor) {
         const texto = normalizar(valor);
         return texto === "si" || texto === "sí" || texto.startsWith("1 si") || texto.startsWith("1 sí");
     }
 
-    function porcentaje(valor,total){
-        if(!total) return 0;
+    function porcentaje(valor, total) {
+        if (!total) return 0;
         return Math.round((valor * 100) / total);
     }
 
-    function dividirServicios(valor){
+    function dividirServicios(valor) {
         return limpiar(valor)
             .split(";")
-            .map(function(item){
-                return item.replace(/^\d+\.?\s*/,"").trim();
+            .map(function(item) {
+                return item.replace(/^\d+\.?\s*/, "").trim();
             })
-            .filter(function(item){
+            .filter(function(item) {
                 return item.length > 0;
             });
     }
 
-    function conteo(lista){
+    function conteo(lista) {
         const mapa = {};
 
-        lista.forEach(function(item){
+        lista.forEach(function(item) {
             const clave = item || "Sin dato";
             mapa[clave] = (mapa[clave] || 0) + 1;
         });
@@ -806,102 +816,86 @@ Resultado consolidado de la encuesta
         return mapa;
     }
 
-    function top(mapa,limite){
+    function top(mapa, limite) {
         return Object.entries(mapa)
-            .sort(function(a,b){ return b[1] - a[1]; })
-            .slice(0,limite || 10);
+            .sort(function(a, b) {
+                return b[1] - a[1];
+            })
+            .slice(0, limite || 10);
     }
 
-    function valoresUnicos(data,columna){
+    function valoresUnicos(data, columna) {
         return [
             ...new Set(
                 data
-                    .map(function(fila){ return etiqueta(fila[columna]); })
-                    .filter(function(valor){ return valor.length > 0; })
+                    .map(function(fila) {
+                        return etiqueta(fila[columna]);
+                    })
+                    .filter(function(valor) {
+                        return valor.length > 0;
+                    })
             )
         ].sort();
     }
 
-    function llenarSelect(id,valores,texto){
+    function llenarSelect(id, valores, texto) {
         const select = document.getElementById(id);
-        if(!select) return;
+
+        if (!select) return;
 
         const actual = select.value;
 
         let html = '<option value="">' + texto + '</option>';
 
-        valores.forEach(function(valor){
-            const seguro = String(valor).replace(/"/g,"&quot;");
+        valores.forEach(function(valor) {
+            const seguro = String(valor).replace(/"/g, "&quot;");
             html += '<option value="' + seguro + '">' + valor + '</option>';
         });
 
         select.innerHTML = html;
 
-        if(valores.includes(actual)){
+        if (valores.includes(actual)) {
             select.value = actual;
         }
     }
 
-    function aplicarFiltros(){
-        const ciudad = document.getElementById("filtroCiudad") ? document.getElementById("filtroCiudad").value : "";
-        const sede = document.getElementById("filtroSede") ? document.getElementById("filtroSede").value : "";
-        const servicio = document.getElementById("filtroServicio") ? document.getElementById("filtroServicio").value : "";
-        const busqueda = document.getElementById("busquedaTexto") ? document.getElementById("busquedaTexto").value.toLowerCase() : "";
-
-        datosFiltrados = datosOriginales.filter(function(fila){
-
-            const serviciosFila = dividirServicios(fila[C.servicios]);
-
-            const okCiudad =
-                !ciudad ||
-                etiqueta(fila[C.ciudad]) === ciudad;
-
-            const okSede =
-                !sede ||
-                etiqueta(fila[C.sede]) === sede;
-
-            const okServicio =
-                !servicio ||
-                serviciosFila.includes(servicio);
-
-            const okBusqueda =
-                !busqueda ||
-                Object.values(fila).join(" ").toLowerCase().includes(busqueda);
-
-            return okCiudad && okSede && okServicio && okBusqueda;
-        });
-
-        actualizarDashboard();
-    }
-
-    function promedioColumna(data,columna){
+    function promedioColumna(data, columna) {
         const valores = data
-            .map(function(fila){ return numeroCalificacion(fila[columna]); })
-            .filter(function(valor){ return valor !== null; });
+            .map(function(fila) {
+                return numeroCalificacion(fila[columna]);
+            })
+            .filter(function(valor) {
+                return valor !== null;
+            });
 
-        if(!valores.length) return 0;
+        if (!valores.length) return 0;
 
-        return valores.reduce(function(a,b){ return a + b; },0) / valores.length;
+        return valores.reduce(function(a, b) {
+            return a + b;
+        }, 0) / valores.length;
     }
 
-    function dibujarBarras(id,items,total){
+    function dibujarBarras(id, items, total) {
         const contenedor = document.getElementById(id);
-        if(!contenedor) return;
 
-        if(!items.length){
+        if (!contenedor) return;
+
+        if (!items.length) {
             contenedor.innerHTML =
                 '<p style="color:#6D7C9B;">Sin datos para este filtro.</p>';
             return;
         }
 
-        const maximo = Math.max(...items.map(function(item){ return item[1]; }),1);
+        const maximo = Math.max(...items.map(function(item) {
+            return item[1];
+        }), 1);
 
-        contenedor.innerHTML = items.map(function(item){
+        contenedor.innerHTML = items.map(function(item) {
 
             const nombre = item[0];
             const valor = item[1];
-            const ancho = Math.max(4,(valor / maximo) * 100);
-            const pct = porcentaje(valor,total);
+            const ancho = Math.max(4, (valor / maximo) * 100);
+            const pct = porcentaje(valor, total);
 
             return `
                 <div class="bar">
@@ -917,39 +911,33 @@ Resultado consolidado de la encuesta
         }).join("");
     }
 
-    function dibujarPromedios(id,columnas,data){
+    function dibujarPromedios(id, columnas, data) {
         const contenedor = document.getElementById(id);
-        if(!contenedor) return;
 
-        const items = columnas.map(function(columna){
-            const promedio = promedioColumna(data,columna);
-            const nombre = columna
-                .replace("Servidor público que lo atendió:","")
-                .trim();
+        if (!contenedor) return;
 
-            return {
-                nombre:nombre,
-                promedio:promedio
-            };
-        });
+        contenedor.innerHTML = columnas.map(function(columna) {
 
-        contenedor.innerHTML = items.map(function(item){
-
-            const pct = Math.round((item.promedio / 5) * 100);
+            const promedio = promedioColumna(data, columna);
+            const pct = Math.round((promedio / 5) * 100);
 
             let color = "#D81E05";
 
-            if(pct >= 80){
+            if (pct >= 80) {
                 color = "#0E9F6E";
-            }else if(pct >= 60){
+            } else if (pct >= 60) {
                 color = "#FFC400";
             }
+
+            const nombre = columna
+                .replace("Servidor público que lo atendió:", "")
+                .trim();
 
             return `
                 <div class="bar">
                     <div class="bar-label">
-                        <span>${item.nombre}</span>
-                        <strong>${item.promedio.toFixed(1)} / 5</strong>
+                        <span>${nombre}</span>
+                        <strong>${promedio.toFixed(1)} / 5</strong>
                     </div>
                     <div class="bar-track">
                         <div class="bar-fill" style="width:${pct}%; background:${color};"></div>
@@ -959,86 +947,131 @@ Resultado consolidado de la encuesta
         }).join("");
     }
 
-    function actualizarKPIs(data){
-        const total = data.length;
-        const sedes = valoresUnicos(data,C.sede).length;
+    function aplicarFiltros() {
+        const ciudad = document.getElementById("filtroCiudad") ? document.getElementById("filtroCiudad").value : "";
+        const sede = document.getElementById("filtroSede") ? document.getElementById("filtroSede").value : "";
+        const servicio = document.getElementById("filtroServicio") ? document.getElementById("filtroServicio").value : "";
+        const busqueda = document.getElementById("busquedaTexto") ? document.getElementById("busquedaTexto").value.toLowerCase() : "";
 
-        const calificacion = promedioColumna(data,C.calidad);
+        datosFiltrados = datosOriginales.filter(function(fila) {
+
+            const serviciosFila = dividirServicios(fila[C.servicios]);
+
+            const okCiudad = !ciudad || etiqueta(fila[C.ciudad]) === ciudad;
+            const okSede = !sede || etiqueta(fila[C.sede]) === sede;
+            const okServicio = !servicio || serviciosFila.includes(servicio);
+            const okBusqueda = !busqueda || Object.values(fila).join(" ").toLowerCase().includes(busqueda);
+
+            return okCiudad && okSede && okServicio && okBusqueda;
+        });
+
+        actualizarDashboard();
+    }
+
+    function actualizarKPIs(data) {
+        const total = data.length;
+        const sedes = valoresUnicos(data, C.sede).length;
+
+        const calificacion = promedioColumna(data, C.calidad);
         const satisfaccion = Math.round((calificacion / 5) * 100);
 
-        const esperaMapa = conteo(data.map(function(fila){ return etiqueta(fila[C.espera]); }));
-        const esperaTop = top(esperaMapa,1);
+        const esperaMapa = conteo(data.map(function(fila) {
+            return etiqueta(fila[C.espera]);
+        }));
+
+        const esperaTop = top(esperaMapa, 1);
         const esperaTexto = esperaTop.length ? esperaTop[0][0] : "Sin dato";
 
-        if(document.getElementById("totalEncuestas")){
-            document.getElementById("totalEncuestas").textContent = total;
-        }
+        const totalEncuestas = document.getElementById("totalEncuestas");
+        const totalSedes = document.getElementById("totalSedes");
+        const promedioGeneral = document.getElementById("promedioGeneral");
+        const tiempoPromedio = document.getElementById("tiempoPromedio");
+        const indicadorGeneral = document.getElementById("indicadorGeneral");
 
-        if(document.getElementById("totalSedes")){
-            document.getElementById("totalSedes").textContent = sedes;
-        }
-
-        if(document.getElementById("promedioGeneral")){
-            document.getElementById("promedioGeneral").textContent = satisfaccion + "%";
-        }
-
-        if(document.getElementById("tiempoPromedio")){
-            document.getElementById("tiempoPromedio").textContent = esperaTexto;
-        }
-
-        if(document.getElementById("indicadorGeneral")){
-            document.getElementById("indicadorGeneral").textContent = satisfaccion + "%";
-        }
+        if (totalEncuestas) totalEncuestas.textContent = total;
+        if (totalSedes) totalSedes.textContent = sedes;
+        if (promedioGeneral) promedioGeneral.textContent = satisfaccion + "%";
+        if (tiempoPromedio) tiempoPromedio.textContent = esperaTexto;
+        if (indicadorGeneral) indicadorGeneral.textContent = satisfaccion + "%";
 
         const circle = document.querySelector(".circle");
 
-        if(circle){
+        if (circle) {
             const grados = Math.round((satisfaccion / 100) * 360);
+
             circle.style.background =
                 `conic-gradient(#FFE000 0deg, #FFE000 ${grados}deg, #E7EEF8 ${grados}deg)`;
         }
     }
 
-    function pintarCalificacion(data){
-        const mapa = conteo(data.map(function(fila){ return etiqueta(fila[C.calidad]); }));
-        dibujarBarras("graficoCalificacion",top(mapa,8),data.length);
-    }
+    function actualizarDashboard() {
+        const data = datosFiltrados;
 
-    function pintarExpectativas(data){
-        const mapa = conteo(data.map(function(fila){ return etiqueta(fila[C.expectativa]); }));
-        dibujarBarras("graficoExpectativas",top(mapa,8),data.length);
-    }
+        actualizarKPIs(data);
 
-    function pintarServicios(data){
+        dibujarBarras(
+            "graficoCalificacion",
+            top(conteo(data.map(function(fila) {
+                return etiqueta(fila[C.calidad]);
+            })), 8),
+            data.length
+        );
+
+        dibujarBarras(
+            "graficoExpectativas",
+            top(conteo(data.map(function(fila) {
+                return etiqueta(fila[C.expectativa]);
+            })), 8),
+            data.length
+        );
+
         const servicios = [];
 
-        data.forEach(function(fila){
-            dividirServicios(fila[C.servicios]).forEach(function(servicio){
+        data.forEach(function(fila) {
+            dividirServicios(fila[C.servicios]).forEach(function(servicio) {
                 servicios.push(servicio);
             });
         });
 
-        dibujarBarras("rankingServicios",top(conteo(servicios),10),data.length);
+        dibujarBarras("rankingServicios", top(conteo(servicios), 10), data.length);
+
+        dibujarBarras(
+            "rankingSedes",
+            top(conteo(data.map(function(fila) {
+                return etiqueta(fila[C.sede]) || "Sin sede";
+            })), 10),
+            data.length
+        );
+
+        dibujarPromedios("infraestructura", infraestructuraCols, data);
+        dibujarPromedios("servidoresPublicos", servidorCols, data);
+
+        dibujarBarras(
+            "tiemposEspera",
+            top(conteo(data.map(function(fila) {
+                return etiqueta(fila[C.espera]);
+            })), 8),
+            data.length
+        );
+
+        dibujarBarras(
+            "canalesPreferidos",
+            top(conteo(data.map(function(fila) {
+                return etiqueta(fila[C.canal]);
+            })), 8),
+            data.length
+        );
+
+        pintarDemografia(data);
+        pintarMejoras(data);
+        pintarComentarios(data);
+        pintarInsights(data);
     }
 
-    function pintarSedes(data){
-        const sedes = data.map(function(fila){ return etiqueta(fila[C.sede]) || "Sin sede"; });
-        dibujarBarras("rankingSedes",top(conteo(sedes),10),data.length);
-    }
-
-    function pintarTiempos(data){
-        const mapa = conteo(data.map(function(fila){ return etiqueta(fila[C.espera]); }));
-        dibujarBarras("tiemposEspera",top(mapa,8),data.length);
-    }
-
-    function pintarCanales(data){
-        const mapa = conteo(data.map(function(fila){ return etiqueta(fila[C.canal]); }));
-        dibujarBarras("canalesPreferidos",top(mapa,8),data.length);
-    }
-
-    function pintarDemografia(data){
+    function pintarDemografia(data) {
         const demografia = document.getElementById("demografia");
-        if(!demografia) return;
+
+        if (!demografia) return;
 
         demografia.innerHTML = `
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
@@ -1046,12 +1079,10 @@ Resultado consolidado de la encuesta
                     <h4 style="margin-bottom:15px;color:#001F5B;">Edad</h4>
                     <div id="demoEdad"></div>
                 </div>
-
                 <div>
                     <h4 style="margin-bottom:15px;color:#001F5B;">Sexo de nacimiento</h4>
                     <div id="demoSexo"></div>
                 </div>
-
                 <div>
                     <h4 style="margin-bottom:15px;color:#001F5B;">Nivel educativo</h4>
                     <div id="demoEducacion"></div>
@@ -1059,14 +1090,35 @@ Resultado consolidado de la encuesta
             </div>
         `;
 
-        dibujarBarras("demoEdad",top(conteo(data.map(function(fila){ return etiqueta(fila[C.edad]); })),6),data.length);
-        dibujarBarras("demoSexo",top(conteo(data.map(function(fila){ return etiqueta(fila[C.sexo]); })),6),data.length);
-        dibujarBarras("demoEducacion",top(conteo(data.map(function(fila){ return etiqueta(fila[C.educacion]); })),6),data.length);
+        dibujarBarras(
+            "demoEdad",
+            top(conteo(data.map(function(fila) {
+                return etiqueta(fila[C.edad]);
+            })), 6),
+            data.length
+        );
+
+        dibujarBarras(
+            "demoSexo",
+            top(conteo(data.map(function(fila) {
+                return etiqueta(fila[C.sexo]);
+            })), 6),
+            data.length
+        );
+
+        dibujarBarras(
+            "demoEducacion",
+            top(conteo(data.map(function(fila) {
+                return etiqueta(fila[C.educacion]);
+            })), 6),
+            data.length
+        );
     }
 
-    function pintarMejoras(data){
+    function pintarMejoras(data) {
         const tabla = document.getElementById("tablaMejoras");
-        if(!tabla) return;
+
+        if (!tabla) return;
 
         const aspectos = [
             ...infraestructuraCols,
@@ -1076,17 +1128,21 @@ Resultado consolidado de la encuesta
             "Servicio recibido: Cumplimiento horarios de atención"
         ];
 
-        const resultados = aspectos.map(function(columna){
+        const resultados = aspectos.map(function(columna) {
             return {
-                columna:columna,
-                promedio:promedioColumna(data,columna)
+                columna: columna,
+                promedio: promedioColumna(data, columna)
             };
         })
-        .filter(function(item){ return item.promedio > 0; })
-        .sort(function(a,b){ return a.promedio - b.promedio; })
-        .slice(0,12);
+        .filter(function(item) {
+            return item.promedio > 0;
+        })
+        .sort(function(a, b) {
+            return a.promedio - b.promedio;
+        })
+        .slice(0, 12);
 
-        tabla.innerHTML = resultados.map(function(item){
+        tabla.innerHTML = resultados.map(function(item) {
             return `
                 <tr>
                     <td>${item.columna}</td>
@@ -1096,36 +1152,37 @@ Resultado consolidado de la encuesta
         }).join("");
     }
 
-    function pintarComentarios(data){
+    function pintarComentarios(data) {
         const contenedor = document.getElementById("comentarios");
-        if(!contenedor) return;
+
+        if (!contenedor) return;
 
         const comentarios = [];
 
-        data.forEach(function(fila){
+        data.forEach(function(fila) {
             [
                 C.mejoraPunto,
                 C.mejoraServidor,
                 "Si contestó afirmativamente la pregunta anterior, indique cuales.",
                 "Si su respuesta anterior fue negativa, por favor indique porque."
-            ].forEach(function(columna){
+            ].forEach(function(columna) {
                 const texto = limpiar(fila[columna]);
 
-                if(texto.length > 15){
+                if (texto.length > 15) {
                     comentarios.push(texto);
                 }
             });
         });
 
-        const seleccion = comentarios.slice(0,12);
+        const seleccion = comentarios.slice(0, 12);
 
-        if(!seleccion.length){
+        if (!seleccion.length) {
             contenedor.innerHTML =
                 "<p style='color:#6D7C9B;'>No hay comentarios disponibles para este filtro.</p>";
             return;
         }
 
-        contenedor.innerHTML = seleccion.map(function(texto){
+        contenedor.innerHTML = seleccion.map(function(texto) {
             return `
                 <div style="
                     padding:16px;
@@ -1141,102 +1198,81 @@ Resultado consolidado de la encuesta
         }).join("");
     }
 
-    function pintarInsights(data){
+    function pintarInsights(data) {
         const total = data.length;
 
-        const calificacion = promedioColumna(data,C.calidad);
+        const calificacion = promedioColumna(data, C.calidad);
         const satisfaccion = Math.round((calificacion / 5) * 100);
 
-        const respuestaEfectiva = data.filter(function(fila){ return esSi(fila[C.efectiva]); }).length;
-        const pctRespuesta = porcentaje(respuestaEfectiva,total);
+        const respuestaEfectiva = data.filter(function(fila) {
+            return esSi(fila[C.efectiva]);
+        }).length;
 
-        const variasVeces = data.filter(function(fila){ return esSi(fila[C.varias]); }).length;
-        const pctVarias = porcentaje(variasVeces,total);
+        const pctRespuesta = porcentaje(respuestaEfectiva, total);
 
-        if(document.getElementById("insight1")){
-            document.getElementById("insight1").innerHTML = `
+        const variasVeces = data.filter(function(fila) {
+            return esSi(fila[C.varias]);
+        }).length;
+
+        const pctVarias = porcentaje(variasVeces, total);
+
+        const insight1 = document.getElementById("insight1");
+        const insight2 = document.getElementById("insight2");
+        const insight3 = document.getElementById("insight3");
+
+        if (insight1) {
+            insight1.innerHTML = `
                 <p style="color:#6D7C9B;line-height:1.6;">
                     La satisfacción consolidada del filtro activo es de
-                    <strong>${satisfaccion}%</strong>, calculada con la calificación general del servicio.
+                    <strong>${satisfaccion}%</strong>.
                 </p>
             `;
         }
 
-        if(document.getElementById("insight2")){
-            document.getElementById("insight2").innerHTML = `
+        if (insight2) {
+            insight2.innerHTML = `
                 <p style="color:#6D7C9B;line-height:1.6;">
-                    El <strong>${pctRespuesta}%</strong> de los registros indica que la entidad dio respuesta efectiva al requerimiento ciudadano.
+                    El <strong>${pctRespuesta}%</strong> de los registros indica respuesta efectiva.
                 </p>
             `;
         }
 
-        if(document.getElementById("insight3")){
-            document.getElementById("insight3").innerHTML = `
+        if (insight3) {
+            insight3.innerHTML = `
                 <p style="color:#6D7C9B;line-height:1.6;">
-                    El <strong>${pctVarias}%</strong> de los ciudadanos tuvo que acudir varias veces, indicador útil para revisar la resolución en primer contacto.
+                    El <strong>${pctVarias}%</strong> tuvo que acudir varias veces.
                 </p>
             `;
         }
     }
 
-    function actualizarDashboard(){
-        const data = datosFiltrados;
-
-        actualizarKPIs(data);
-        pintarCalificacion(data);
-        pintarExpectativas(data);
-        pintarServicios(data);
-        pintarSedes(data);
-        dibujarPromedios("infraestructura",infraestructuraCols,data);
-        dibujarPromedios("servidoresPublicos",servidorCols,data);
-        pintarTiempos(data);
-        pintarCanales(data);
-        pintarDemografia(data);
-        pintarMejoras(data);
-        pintarComentarios(data);
-        pintarInsights(data);
-    }
-
-    function inicializarFiltros(){
-        llenarSelect(
-            "filtroCiudad",
-            valoresUnicos(datosOriginales,C.ciudad),
-            "Todas las ciudades"
-        );
-
-        llenarSelect(
-            "filtroSede",
-            valoresUnicos(datosOriginales,C.sede),
-            "Todas las sedes"
-        );
+    function inicializarFiltros() {
+        llenarSelect("filtroCiudad", valoresUnicos(datosOriginales, C.ciudad), "Todas las ciudades");
+        llenarSelect("filtroSede", valoresUnicos(datosOriginales, C.sede), "Todas las sedes");
 
         const servicios = [];
 
-        datosOriginales.forEach(function(fila){
-            dividirServicios(fila[C.servicios]).forEach(function(servicio){
+        datosOriginales.forEach(function(fila) {
+            dividirServicios(fila[C.servicios]).forEach(function(servicio) {
                 servicios.push(servicio);
             });
         });
 
-        llenarSelect(
-            "filtroServicio",
-            [...new Set(servicios)].sort(),
-            "Todos los servicios"
-        );
+        llenarSelect("filtroServicio", [...new Set(servicios)].sort(), "Todos los servicios");
 
         const filtroCiudad = document.getElementById("filtroCiudad");
         const filtroSede = document.getElementById("filtroSede");
         const filtroServicio = document.getElementById("filtroServicio");
         const busquedaTexto = document.getElementById("busquedaTexto");
 
-        if(filtroCiudad) filtroCiudad.addEventListener("change", aplicarFiltros);
-        if(filtroSede) filtroSede.addEventListener("change", aplicarFiltros);
-        if(filtroServicio) filtroServicio.addEventListener("change", aplicarFiltros);
-        if(busquedaTexto) busquedaTexto.addEventListener("input", aplicarFiltros);
+        if (filtroCiudad) filtroCiudad.addEventListener("change", aplicarFiltros);
+        if (filtroSede) filtroSede.addEventListener("change", aplicarFiltros);
+        if (filtroServicio) filtroServicio.addEventListener("change", aplicarFiltros);
+        if (busquedaTexto) busquedaTexto.addEventListener("input", aplicarFiltros);
     }
 
-    function validarArchivoExcel(buffer){
-        const bytes = new Uint8Array(buffer.slice(0,4));
+    function validarArchivoExcel(buffer) {
+        const bytes = new Uint8Array(buffer.slice(0, 4));
 
         return (
             bytes[0] === 0x50 &&
@@ -1244,48 +1280,55 @@ Resultado consolidado de la encuesta
         );
     }
 
-    async function cargarExcel(){
-        if(estado){
-            estado.innerHTML = "Cargando datos...";
+    async function cargarExcel() {
+        if (estado) {
+            estado.innerHTML = "Script activo. Cargando librería XLSX...";
         }
 
         await cargarLibreriaXLSX();
 
+        if (estado) {
+            estado.innerHTML = "Librería cargada. Buscando archivo Excel...";
+        }
+
         let ultimoError = "";
 
-        for(const archivo of ARCHIVOS_EXCEL){
-            try{
-                const respuesta = await fetch(
-                    archivo + "?v=" + Date.now(),
-                    {
-                        cache:"no-store"
-                    }
-                );
+        for (const archivo of ARCHIVOS_EXCEL) {
 
-                if(!respuesta.ok){
+            try {
+
+                if (estado) {
+                    estado.innerHTML = "Probando archivo:<br>" + archivo;
+                }
+
+                const respuesta = await fetch(archivo + "?v=" + Date.now(), {
+                    cache: "no-store"
+                });
+
+                if (!respuesta.ok) {
                     ultimoError = archivo + " - HTTP " + respuesta.status;
                     continue;
                 }
 
                 const buffer = await respuesta.arrayBuffer();
 
-                if(!validarArchivoExcel(buffer)){
-                    ultimoError = archivo + " - La URL respondió algo que no es un XLSX.";
+                if (!validarArchivoExcel(buffer)) {
+                    ultimoError = archivo + " - La respuesta NO es XLSX.";
                     continue;
                 }
 
-                const libro = XLSX.read(buffer,{
-                    type:"array"
+                const libro = XLSX.read(buffer, {
+                    type: "array"
                 });
 
                 const hoja = libro.Sheets[libro.SheetNames[0]];
 
-                datosOriginales = XLSX.utils.sheet_to_json(hoja,{
-                    defval:""
+                datosOriginales = XLSX.utils.sheet_to_json(hoja, {
+                    defval: ""
                 });
 
-                if(!datosOriginales.length){
-                    ultimoError = archivo + " - El Excel cargó, pero no contiene registros.";
+                if (!datosOriginales.length) {
+                    ultimoError = archivo + " - Excel sin registros.";
                     continue;
                 }
 
@@ -1294,7 +1337,7 @@ Resultado consolidado de la encuesta
                 inicializarFiltros();
                 actualizarDashboard();
 
-                if(estado){
+                if (estado) {
                     estado.innerHTML =
                         "Datos cargados automáticamente: " +
                         datosOriginales.length +
@@ -1302,19 +1345,20 @@ Resultado consolidado de la encuesta
                 }
 
                 return;
-            }catch(error){
+
+            } catch (error) {
                 ultimoError = archivo + " - " + error.message;
             }
         }
 
-        if(estado){
+        if (estado) {
             estado.innerHTML =
                 "ERROR CARGANDO EXCEL:<br>" + ultimoError;
         }
     }
 
-    cargarExcel().catch(function(error){
-        if(estado){
+    cargarExcel().catch(function(error) {
+        if (estado) {
             estado.innerHTML =
                 "ERROR FINAL:<br>" + error.message;
         }
